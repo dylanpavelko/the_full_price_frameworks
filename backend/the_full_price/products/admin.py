@@ -14,17 +14,20 @@ class MaterialAdmin(admin.ModelAdmin):
     Admin interface for Material model.
     
     Allows users to create and edit materials with their impact factors.
+    Uses CO2-equivalent (CO2e) for greenhouse gas emissions to account for
+    all greenhouse gases (methane, nitrous oxide, etc.) in their warming potential.
     """
-    list_display = ['name', 'greenhouse_gas_kg_per_kg', 'water_liters_per_kg', 'cost_per_kg']
+    list_display = ['name', 'co2e_kg_per_kg', 'water_liters_per_kg', 'cost_per_kg']
     search_fields = ['name']
     list_filter = ['created_at']
     fieldsets = (
         ('Basic Information', {
-            'fields': ('name',)
+            'fields': ('name', 'description')
         }),
         ('Impact Factors per Kilogram', {
+            'description': 'All impacts are measured per kg of material. CO2e represents CO2-equivalent emissions accounting for all greenhouse gases.',
             'fields': (
-                'greenhouse_gas_kg_per_kg',
+                'co2e_kg_per_kg',
                 'water_liters_per_kg',
                 'energy_kwh_per_kg',
                 'land_m2_per_kg',

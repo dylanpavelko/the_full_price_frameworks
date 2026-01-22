@@ -12,13 +12,21 @@ class Material(models.Model):
     """
     Represents a material that products can be made from (e.g., cotton, plastic).
     Each material has impact factors for different dimensions.
+    
+    Note: Greenhouse gas impact uses CO2-equivalent (CO2e) methodology, which accounts
+    for all greenhouse gases (CO2, methane, nitrous oxide, etc.) converted to their
+    equivalent warming potential relative to CO2. This follows standard climate accounting
+    practices (e.g., GHG Protocol, ISO 14040).
     """
     name = models.CharField(max_length=100, unique=True)
     description = models.TextField(blank=True)
     
     # Impact per kilogram of material
     # All impacts are per kg of material to make calculations scalable
-    greenhouse_gas_kg_per_kg = models.FloatField(default=0)  # kg CO2e per kg material
+    co2e_kg_per_kg = models.FloatField(
+        default=0,
+        help_text="CO2-equivalent emissions (kg CO2e per kg material). Accounts for all GHGs converted to CO2 equivalents using standard climate accounting methodology."
+    )  # kg CO2e per kg material
     water_liters_per_kg = models.FloatField(default=0)  # liters per kg material
     energy_kwh_per_kg = models.FloatField(default=0)  # kWh per kg material
     land_m2_per_kg = models.FloatField(default=0)  # m² per kg material
@@ -131,8 +139,12 @@ class ProductComponent(models.Model):
         return self.weight_grams / 1000
 
     def get_greenhouse_gas_impact(self):
-        """Calculate this component's greenhouse gas impact in kg CO2e."""
-        return self.get_weight_kg() * self.material.greenhouse_gas_kg_per_kg
+        """Calculate this component's greenhouse gas impact in kg CO2e (CO2-equivalent).
+        
+        This uses CO2-equivalent methodology which converts all greenhouse gases
+        (methane, nitrous oxide, etc.) to their warming potential equivalents in CO2.
+        """
+        return self.get_weight_kg() * self.material.co2e_kg_per_kg
 
     def get_water_impact(self):
         """Calculate this component's water impact in liters."""
