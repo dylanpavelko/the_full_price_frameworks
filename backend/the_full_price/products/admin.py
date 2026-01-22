@@ -102,7 +102,6 @@ class ProductAdmin(admin.ModelAdmin):
                 'use_land_m2_per_use',
                 'use_cost_per_use'
             ),
-            'classes': ('collapse',)  # Collapsed by default since not all products have use-phase impacts
         }),
     )
 
