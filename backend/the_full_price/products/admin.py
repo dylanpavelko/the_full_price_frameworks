@@ -11,27 +11,48 @@ from .models import Material, Product, ProductComponent
 @admin.register(Material)
 class MaterialAdmin(admin.ModelAdmin):
     """
-    Admin interface for Material model.
+    Admin interface for Material model with lifecycle phase breakdown.
     
-    Allows users to create and edit materials with their impact factors.
+    Allows users to create and edit materials with their impact factors
+    separated by lifecycle phase: production, transport, and end-of-life.
     Uses CO2-equivalent (CO2e) for greenhouse gas emissions to account for
     all greenhouse gases (methane, nitrous oxide, etc.) in their warming potential.
     """
-    list_display = ['name', 'co2e_kg_per_kg', 'water_liters_per_kg', 'cost_per_kg']
+    list_display = ['name', 'production_co2e_kg_per_kg', 'transport_co2e_kg_per_kg', 'end_of_life_co2e_kg_per_kg']
     search_fields = ['name']
     list_filter = ['created_at']
     fieldsets = (
         ('Basic Information', {
             'fields': ('name', 'description')
         }),
-        ('Impact Factors per Kilogram', {
-            'description': 'All impacts are measured per kg of material. CO2e represents CO2-equivalent emissions accounting for all greenhouse gases.',
+        ('Production Phase - Impact per Kilogram', {
+            'description': 'Environmental and cost impacts from extracting raw materials and manufacturing.',
             'fields': (
-                'co2e_kg_per_kg',
-                'water_liters_per_kg',
-                'energy_kwh_per_kg',
-                'land_m2_per_kg',
-                'cost_per_kg'
+                'production_co2e_kg_per_kg',
+                'production_water_liters_per_kg',
+                'production_energy_kwh_per_kg',
+                'production_land_m2_per_kg',
+                'production_cost_per_kg'
+            )
+        }),
+        ('Transport Phase - Impact per Kilogram', {
+            'description': 'Environmental and cost impacts from shipping and transporting the material.',
+            'fields': (
+                'transport_co2e_kg_per_kg',
+                'transport_water_liters_per_kg',
+                'transport_energy_kwh_per_kg',
+                'transport_land_m2_per_kg',
+                'transport_cost_per_kg'
+            )
+        }),
+        ('End of Life Phase - Impact per Kilogram', {
+            'description': 'Environmental and cost impacts from disposal, recycling, or incineration.',
+            'fields': (
+                'end_of_life_co2e_kg_per_kg',
+                'end_of_life_water_liters_per_kg',
+                'end_of_life_energy_kwh_per_kg',
+                'end_of_life_land_m2_per_kg',
+                'end_of_life_cost_per_kg'
             )
         }),
     )
@@ -71,6 +92,17 @@ class ProductAdmin(admin.ModelAdmin):
         ('Usage & Lifecycle', {
             'fields': ('uses_per_year', 'average_lifespan_uses'),
             'description': 'Uses per year: average times used per year. Lifespan uses: total number of uses before needing replacement.'
+        }),
+        ('Use Phase Impacts - Per Use', {
+            'description': 'Environmental and cost impacts that occur during each use (e.g., washing, drying). Leave as 0 if there are no use-phase impacts.',
+            'fields': (
+                'use_co2e_kg_per_use',
+                'use_water_liters_per_use',
+                'use_energy_kwh_per_use',
+                'use_land_m2_per_use',
+                'use_cost_per_use'
+            ),
+            'classes': ('collapse',)  # Collapsed by default since not all products have use-phase impacts
         }),
     )
 
