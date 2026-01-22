@@ -157,6 +157,58 @@
   font-style: italic;
   background: rgba(102, 126, 234, 0.05);
   padding: 0.75rem;
+.comparison__metric-row--info {
+  background: #f9f9f9;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+.comparison__metric-row--info .comparison__metric-label,
+.comparison__metric-row--info .comparison__metric-value {
+  color: #333;
+}
+
+/* Lifecycle phase breakdown */
+.comparison__phase-breakdown {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  background: #f5f5f5;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 0.75rem 1rem;
+  margin-left: 2rem;
+  font-size: 0.85rem;
+}
+
+.comparison__phase-label {
+  grid-column: 1;
+  color: #666;
+  font-weight: 600;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.comparison__phase-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0;
+  align-items: center;
+  border-bottom: 1px solid #e8e8e8;
+  padding: 0.5rem 0;
+}
+
+.comparison__phase-phase {
+  color: #555;
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding-right: 1rem;
+}
+
+.comparison__phase-value {
+  text-align: center;
+  color: #333;
+  padding: 0.25rem;
+}
+
   border-left: 3px solid #667eea;
   border-radius: 4px;
   text-align: left;

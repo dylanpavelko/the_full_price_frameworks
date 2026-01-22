@@ -2,7 +2,7 @@
  * ComparisonView component - displays side-by-side product comparison
  * 
  * Shows two products with their impacts and highlights which is better/worse
- * for each environmental metric.
+ * for each environmental metric. Now includes lifecycle phase breakdown.
  */
 import {
   formatCurrency,
@@ -11,7 +11,7 @@ import {
   formatEnergy,
   formatLand,
 } from '../utils/formatting.js';
-import { compareProducts, getItemsPerYear } from '../utils/comparison.js';
+import { compareProducts, getItemsPerYear, getAnnualImpactByPhase } from '../utils/comparison.js';
 import './ComparisonView.css';
 
 export function ComparisonView({ product1, product2 }) {
@@ -26,6 +26,22 @@ export function ComparisonView({ product1, product2 }) {
     water: compareProducts(product1, product2, 'water_liters'),
     energy: compareProducts(product1, product2, 'energy_kwh'),
     land: compareProducts(product1, product2, 'land_m2'),
+  };
+
+  // Get phase breakdowns for each metric
+  const phaseBreakdowns = {
+    ghg: {
+      product1: getAnnualImpactByPhase(product1, 'greenhouse_gas_kg'),
+      product2: getAnnualImpactByPhase(product2, 'greenhouse_gas_kg'),
+    },
+    water: {
+      product1: getAnnualImpactByPhase(product1, 'water_liters'),
+      product2: getAnnualImpactByPhase(product2, 'water_liters'),
+    },
+    energy: {
+      product1: getAnnualImpactByPhase(product1, 'energy_kwh'),
+      product2: getAnnualImpactByPhase(product2, 'energy_kwh'),
+    },
   };
 
   // Determine which product wins overall
@@ -55,6 +71,60 @@ export function ComparisonView({ product1, product2 }) {
         }`}>
           {formatFn(comparison.product2Impact)}
           {comparison.winner === product2.name && <span className="winner-badge">✓</span>}
+        </div>
+      </div>
+    );
+  };
+
+  const renderPhaseBreakdown = (label, impactKey, formatFn, breakdown) => {
+    if (!breakdown.product1 || !breakdown.product2) return null;
+    
+    return (
+      <div key={`${label}-phases`} className="comparison__phase-breakdown">
+        <div className="comparison__phase-label">↳ {label} by Lifecycle Phase:</div>
+        
+        {/* Production */}
+        <div className="comparison__phase-row">
+          <div className="comparison__phase-phase">Production</div>
+          <div className="comparison__phase-value">
+            {formatFn(breakdown.product1.production)}
+          </div>
+          <div className="comparison__phase-value">
+            {formatFn(breakdown.product2.production)}
+          </div>
+        </div>
+        
+        {/* Transport */}
+        <div className="comparison__phase-row">
+          <div className="comparison__phase-phase">Transport</div>
+          <div className="comparison__phase-value">
+            {formatFn(breakdown.product1.transport)}
+          </div>
+          <div className="comparison__phase-value">
+            {formatFn(breakdown.product2.transport)}
+          </div>
+        </div>
+        
+        {/* Use */}
+        <div className="comparison__phase-row">
+          <div className="comparison__phase-phase">Use & Care</div>
+          <div className="comparison__phase-value">
+            {formatFn(breakdown.product1.use)}
+          </div>
+          <div className="comparison__phase-value">
+            {formatFn(breakdown.product2.use)}
+          </div>
+        </div>
+        
+        {/* End of Life */}
+        <div className="comparison__phase-row">
+          <div className="comparison__phase-phase">End of Life</div>
+          <div className="comparison__phase-value">
+            {formatFn(breakdown.product1.end_of_life)}
+          </div>
+          <div className="comparison__phase-value">
+            {formatFn(breakdown.product2.end_of_life)}
+          </div>
         </div>
       </div>
     );
@@ -112,16 +182,19 @@ export function ComparisonView({ product1, product2 }) {
         {renderMetricRow('CO₂e Emissions', comparisons.ghg, (val) =>
           formatGreenhouseGas(val)
         )}
+        {renderPhaseBreakdown('CO₂e Emissions', 'greenhouse_gas_kg', formatGreenhouseGas, phaseBreakdowns.ghg)}
 
         {/* Water */}
         {renderMetricRow('Water Usage', comparisons.water, (val) =>
           formatWater(val)
         )}
+        {renderPhaseBreakdown('Water Usage', 'water_liters', formatWater, phaseBreakdowns.water)}
 
         {/* Energy */}
         {renderMetricRow('Energy', comparisons.energy, (val) =>
           formatEnergy(val)
         )}
+        {renderPhaseBreakdown('Energy', 'energy_kwh', formatEnergy, phaseBreakdowns.energy)}
 
         {/* Land */}
         {renderMetricRow('Land Use', comparisons.land, (val) =>

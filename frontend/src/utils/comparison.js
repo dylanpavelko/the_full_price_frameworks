@@ -141,6 +141,44 @@ export function getComponentBreakdown(product) {
 }
 
 /**
+ * Calculate annual impact for a product by lifecycle phase
+ * 
+ * Accounts for:
+ * - Material phases (production, transport, end_of_life): amortized over lifespan
+ * - Use phase: multiplied by uses per year
+ * 
+ * @param {Object} product - Product with impacts_by_phase data
+ * @param {string} impactType - Type of impact (e.g., 'greenhouse_gas_kg')
+ * @returns {Object} Impact breakdown by phase: {production, transport, end_of_life, use, total}
+ */
+export function getAnnualImpactByPhase(product, impactType) {
+  if (!product.impacts_by_phase) {
+    return null;
+  }
+  
+  const phases = product.impacts_by_phase;
+  const usesPerYear = product.uses_per_year || 1;
+  const lifespanUses = product.average_lifespan_uses || 1;
+  const itemsPerYear = usesPerYear / lifespanUses;
+  
+  // Material phases are per-item, so multiply by items per year
+  const production = (phases.production?.[impactType] || 0) * itemsPerYear;
+  const transport = (phases.transport?.[impactType] || 0) * itemsPerYear;
+  const endOfLife = (phases.end_of_life?.[impactType] || 0) * itemsPerYear;
+  
+  // Use phase is per-use, so multiply by uses per year
+  const use = (phases.use?.[impactType] || 0) * usesPerYear;
+  
+  return {
+    production,
+    transport,
+    end_of_life: endOfLife,
+    use,
+    total: production + transport + endOfLife + use
+  };
+}
+
+/**
  * Calculate total impact score for a component
  * @param {Object} impacts - Component impacts object
  * @returns {number} Total impact score
