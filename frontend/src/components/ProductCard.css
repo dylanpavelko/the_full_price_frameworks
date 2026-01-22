@@ -1,0 +1,64 @@
+.product-card {
+  display: block;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.product-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.product-card__content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.product-card__name {
+  margin: 0;
+  font-size: 1.3rem;
+  color: #2c3e50;
+}
+
+.product-card__description {
+  margin: 0;
+  color: #666;
+  font-size: 0.95rem;
+}
+
+.product-card__impacts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.impact-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.impact-label {
+  font-size: 0.85rem;
+  color: #999;
+  font-weight: 600;
+}
+
+.impact-value {
+  font-size: 0.95rem;
+  color: #2c3e50;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .product-card__impacts {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,196 @@
+/**
+ * Styles for the PostDetail page
+ * 
+ * Provides layout and styling for viewing individual posts
+ * with their full content and associated products.
+ */
+
+.post-detail {
+  padding: 2rem 1rem;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: 100vh;
+}
+
+.post-detail__container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.post-detail__header {
+  margin-bottom: 3rem;
+}
+
+.post-detail__back-button {
+  background: white;
+  border: 2px solid #e0e0e0;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+}
+
+.post-detail__back-button:hover {
+  background: #f5f5f5;
+  border-color: #333;
+  transform: translateX(-2px);
+}
+
+.post-detail__title {
+  font-size: 2.5rem;
+  margin: 1rem 0;
+  color: #1a1a1a;
+  line-height: 1.2;
+}
+
+.post-detail__meta {
+  display: flex;
+  gap: 1rem;
+  margin: 1rem 0;
+  font-size: 0.95rem;
+  color: #666;
+}
+
+.post-detail__type {
+  display: inline-block;
+  background: #e3f2fd;
+  color: #1976d2;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 600;
+}
+
+/* Content Styling */
+.post-detail__content {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+  line-height: 1.8;
+  color: #333;
+}
+
+.post-detail__markdown {
+  font-size: 1.1rem;
+}
+
+.post-detail__markdown h1,
+.post-detail__markdown h2,
+.post-detail__markdown h3 {
+  margin: 1.5rem 0 0.5rem;
+  color: #1a1a1a;
+  font-weight: 600;
+}
+
+.post-detail__markdown h1 {
+  font-size: 2rem;
+}
+
+.post-detail__markdown h2 {
+  font-size: 1.5rem;
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 0.5rem;
+}
+
+.post-detail__markdown h3 {
+  font-size: 1.2rem;
+}
+
+.post-detail__markdown p {
+  margin: 1rem 0;
+}
+
+.post-detail__markdown ul,
+.post-detail__markdown ol {
+  margin: 1rem 0;
+  padding-left: 2rem;
+}
+
+.post-detail__markdown li {
+  margin: 0.5rem 0;
+}
+
+.post-detail__markdown code {
+  background: #f5f5f5;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.95rem;
+}
+
+.post-detail__markdown blockquote {
+  border-left: 4px solid #1976d2;
+  padding: 1rem;
+  margin: 1.5rem 0;
+  background: #f5f5f5;
+  font-style: italic;
+}
+
+.post-detail__empty {
+  color: #999;
+  font-style: italic;
+  text-align: center;
+  padding: 2rem;
+}
+
+/* Error State */
+.post-detail__error {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.post-detail__error h2 {
+  color: #d32f2f;
+  margin-bottom: 1rem;
+}
+
+.post-detail__error p {
+  color: #666;
+  margin-bottom: 1.5rem;
+}
+
+/* Comparison Products */
+.post-detail__products {
+  margin-top: 3rem;
+}
+
+.post-detail__products-title {
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  color: #1a1a1a;
+}
+
+.post-detail__products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .post-detail {
+    padding: 1rem;
+  }
+
+  .post-detail__title {
+    font-size: 1.8rem;
+  }
+
+  .post-detail__content {
+    padding: 1.5rem;
+  }
+
+  .post-detail__markdown {
+    font-size: 1rem;
+  }
+
+  .post-detail__products-grid {
+    grid-template-columns: 1fr;
+  }
+}

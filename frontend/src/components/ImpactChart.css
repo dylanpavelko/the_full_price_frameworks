@@ -1,0 +1,72 @@
+.impact-chart {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.impact-chart__title {
+  margin: 0 0 1.5rem 0;
+  font-size: 1.2rem;
+  color: #2c3e50;
+}
+
+.impact-chart__items {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.chart-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.chart-item__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chart-item__label {
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 0.95rem;
+}
+
+.chart-item__value {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.chart-item__bar {
+  height: 24px;
+  background: #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.chart-item__bar-fill {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.impact-chart__cost {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #ddd;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cost-label {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.cost-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #27ae60;
+}

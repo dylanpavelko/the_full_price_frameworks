@@ -1,0 +1,65 @@
+{
+  "products": [
+    {
+      "id": 2,
+      "name": "Cotton Napkin",
+      "description": "",
+      "slug": "cotton-napkin",
+      "purchase_price_usd": 2.0,
+      "uses_per_year": 250.0,
+      "average_lifespan_uses": 500.0,
+      "impacts": {
+        "greenhouse_gas_kg": 0.0675,
+        "water_liters": 250.0,
+        "energy_kwh": 0.017499999999999998,
+        "land_m2": 0.020000000000000004,
+        "cost_usd": 2.075
+      },
+      "components": [
+        {
+          "id": 2,
+          "material_name": "Cotton",
+          "weight_grams": 25.0,
+          "impacts": {
+            "greenhouse_gas_kg": 0.0675,
+            "water_liters": 250.0,
+            "energy_kwh": 0.017499999999999998,
+            "land_m2": 0.020000000000000004,
+            "cost_usd": 0.07500000000000001
+          }
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "name": "Paper Napkin",
+      "description": "",
+      "slug": "paper-napkin",
+      "purchase_price_usd": 0.05,
+      "uses_per_year": 365.0,
+      "average_lifespan_uses": 1.0,
+      "impacts": {
+        "greenhouse_gas_kg": 0.0036,
+        "water_liters": 1.2,
+        "energy_kwh": 0.0075,
+        "land_m2": 6e-05,
+        "cost_usd": 0.053000000000000005
+      },
+      "components": [
+        {
+          "id": 1,
+          "material_name": "Paper",
+          "weight_grams": 3.0,
+          "impacts": {
+            "greenhouse_gas_kg": 0.0036,
+            "water_liters": 1.2,
+            "energy_kwh": 0.0075,
+            "land_m2": 6e-05,
+            "cost_usd": 0.003
+          }
+        }
+      ]
+    }
+  ],
+  "export_timestamp": "2026-01-21T23:08:47.722395"
+}

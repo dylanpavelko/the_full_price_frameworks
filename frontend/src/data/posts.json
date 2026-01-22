@@ -1,0 +1,23 @@
+{
+  "posts": [
+    {
+      "id": 1,
+      "title": "Paper vs Cotton Napkins",
+      "slug": "paper-vs-cotton-napkins",
+      "post_type": "comparison",
+      "content": "How does a paper napkin compare to a cotton cloth napkin.",
+      "excerpt": "",
+      "author": "The Full Price Team",
+      "created_at": "2026-01-18T23:29:32.860451+00:00",
+      "updated_at": "2026-01-18T23:29:32.860507+00:00",
+      "featured": false,
+      "comparison": {
+        "product_ids": [
+          1,
+          2
+        ]
+      }
+    }
+  ],
+  "export_timestamp": "2026-01-18T23:31:54.174927"
+}
