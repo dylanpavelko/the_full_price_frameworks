@@ -343,7 +343,7 @@ export function ComparisonView({ product1, product2 }) {
   return (
 
     <div className="comparison">
-      {/* Header, break-even, debug */}
+      {/* Header, break-even (no debug) */}
       <div className="comparison__header">
         <h2>Product Comparison</h2>
         <p className="comparison__winner-text">
@@ -353,17 +353,7 @@ export function ComparisonView({ product1, product2 }) {
             ? `${product2.name} is more sustainable (${wins.product2}/${Object.keys(comparisons).length} metrics)${breakEvenText}`
             : `It's a tie - both products have pros and cons${breakEvenText}`}
         </p>
-        {breakEvenDisplay.length > 0 && (
-          <div className="comparison__breakeven-section">
-            <strong>Time to Break-Even by Metric:</strong>
-            {breakEvenDisplay}
-          </div>
-        )}
-        {/* DEBUG: Show raw break-even calculation for all metrics */}
-        <div style={{background:'#ffe',color:'#333',padding:'0.5rem',margin:'1rem 0',fontSize:'0.95em',border:'1px solid #cc0'}}>
-          <strong>DEBUG (Break-Even by Metric):</strong>
-          <pre style={{margin:0}}>{JSON.stringify(debugBreakEvens, null, 2)}</pre>
-        </div>
+        {/* Removed break-even section as requested */}
       </div>
 
       {/* SUMMARY TABLE */}
