@@ -22,8 +22,8 @@ import { compareProducts, getItemsPerYear, getAnnualImpactByPhase } from '../uti
 import './ComparisonView.css';
 
 export function ComparisonView({ product1, product2 }) {
-  // Toggle between sum and phase breakdown view
-  const [showPhase, setShowPhase] = useState(true);
+  // Toggle between grouping by phase or by metric
+  const [groupByPhase, setGroupByPhase] = useState(false);
   // Toggle between metric and imperial units
   const [useImperial, setUseImperial] = useState(false);
   if (!product1 || !product2) {
@@ -258,7 +258,7 @@ export function ComparisonView({ product1, product2 }) {
     );
   };
 
-  // Render a side-by-side table for a metric, either as sum or by phase
+  // Render a side-by-side table for a metric, grouped by phase (rows = phases, columns = products), with total row at bottom
   const renderMetricTable = (label, impactKey, formatFn, breakdown, sumKey) => {
     const phases = [
       { key: 'production', label: 'Production' },
@@ -273,40 +273,77 @@ export function ComparisonView({ product1, product2 }) {
           <div className="comparison__phase-table-product">{product1.name}</div>
           <div className="comparison__phase-table-product">{product2.name}</div>
         </div>
-        {showPhase
-          ? phases.map(phase => (
-              <div className="comparison__phase-table-row" key={phase.key}>
-                <div className="comparison__phase-table-phase">{phase.label}</div>
-                <div className="comparison__phase-table-value">
-                  {breakdown.product1 && breakdown.product1[phase.key] != null
-                    ? formatFn(breakdown.product1[phase.key])
-                    : '0'}
-                </div>
-                <div className="comparison__phase-table-value">
-                  {breakdown.product2 && breakdown.product2[phase.key] != null
-                    ? formatFn(breakdown.product2[phase.key])
-                    : '0'}
-                </div>
-              </div>
-            ))
-          : (
-              <div className="comparison__phase-table-row" key="sum">
-                <div className="comparison__phase-table-phase">Total</div>
-                <div className="comparison__phase-table-value">
-                  {formatFn(product1.impacts[sumKey])}
-                </div>
-                <div className="comparison__phase-table-value">
-                  {formatFn(product2.impacts[sumKey])}
-                </div>
-              </div>
-            )}
+        {phases.map(phase => (
+          <div className="comparison__phase-table-row" key={phase.key}>
+            <div className="comparison__phase-table-phase">{phase.label}</div>
+            <div className="comparison__phase-table-value">
+              {breakdown.product1 && breakdown.product1[phase.key] != null
+                ? formatFn(breakdown.product1[phase.key])
+                : '0'}
+            </div>
+            <div className="comparison__phase-table-value">
+              {breakdown.product2 && breakdown.product2[phase.key] != null
+                ? formatFn(breakdown.product2[phase.key])
+                : '0'}
+            </div>
+          </div>
+        ))}
+        {/* Total row at the bottom */}
+        <div className="comparison__phase-table-row" key="sum">
+          <div className="comparison__phase-table-phase"><strong>Total</strong></div>
+          <div className="comparison__phase-table-value">
+            {formatFn(product1.impacts[sumKey])}
+          </div>
+          <div className="comparison__phase-table-value">
+            {formatFn(product2.impacts[sumKey])}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Render a table for a phase, grouped by metric (rows = metrics, columns = products), with total row at bottom
+  const renderPhaseTable = (phaseKey, phaseLabel) => {
+    const metrics = [
+      { key: 'greenhouse_gas_kg', label: 'CO₂e Emissions', format: formatters.ghg },
+      { key: 'water_liters', label: 'Water Usage', format: formatters.water },
+      { key: 'energy_kwh', label: 'Energy', format: formatters.energy },
+      { key: 'land_m2', label: 'Land Use', format: formatters.land },
+      { key: 'cost_usd', label: 'Cost', format: formatters.cost },
+    ];
+    // Helper to get phase value for a product and metric
+    const getVal = (product, metric) => {
+      if (!product.impacts_by_phase || !product.impacts_by_phase[phaseKey]) return 0;
+      return product.impacts_by_phase[phaseKey][metric] || 0;
+    };
+    return (
+      <div className="comparison__phase-table" key={phaseKey}>
+        <div className="comparison__phase-table-header-row">
+          <div className="comparison__phase-table-label">{phaseLabel}</div>
+          <div className="comparison__phase-table-product">{product1.name}</div>
+          <div className="comparison__phase-table-product">{product2.name}</div>
+        </div>
+        {metrics.map(metric => (
+          <div className="comparison__phase-table-row" key={metric.key}>
+            <div className="comparison__phase-table-phase">{metric.label}</div>
+            <div className="comparison__phase-table-value">
+              {metric.format(getVal(product1, metric.key))}
+            </div>
+            <div className="comparison__phase-table-value">
+              {metric.format(getVal(product2, metric.key))}
+            </div>
+          </div>
+        ))}
+        {/* No total row for phase tables (group by phase) */}
       </div>
     );
   };
   // (end of helpers, main return block should follow)
 
   return (
+
     <div className="comparison">
+      {/* Header, break-even, debug */}
       <div className="comparison__header">
         <h2>Product Comparison</h2>
         <p className="comparison__winner-text">
@@ -428,109 +465,45 @@ export function ComparisonView({ product1, product2 }) {
         </div>
       </div>
 
-
-      <div className="comparison__header">
-        <h2>Product Comparison</h2>
-        <p className="comparison__winner-text">
-          {wins.product1 > wins.product2
-            ? `${product1.name} is more sustainable (${wins.product1}/${Object.keys(comparisons).length} metrics)${breakEvenText}`
-            : wins.product2 > wins.product1
-            ? `${product2.name} is more sustainable (${wins.product2}/${Object.keys(comparisons).length} metrics)${breakEvenText}`
-            : `It's a tie - both products have pros and cons${breakEvenText}`}
-        </p>
-        {breakEvenDisplay.length > 0 && (
-          <div className="comparison__breakeven-section">
-            <strong>Time to Break-Even by Metric:</strong>
-            {breakEvenDisplay}
-          </div>
-        )}
-        {/* DEBUG: Show raw break-even calculation for all metrics */}
-        <div style={{background:'#ffe',color:'#333',padding:'0.5rem',margin:'1rem 0',fontSize:'0.95em',border:'1px solid #cc0'}}>
-          <strong>DEBUG (Break-Even by Metric):</strong>
-          <pre style={{margin:0}}>{JSON.stringify(debugBreakEvens, null, 2)}</pre>
-        </div>
-      </div>
-
-      {/* SUMMARY TABLE */}
-      <div className="comparison__table">
-        <div className="comparison__header-row">
-          <div className="comparison__metric-label">Metric</div>
-          <div className="comparison__product-name">{product1.name}</div>
-          <div className="comparison__product-name">{product2.name}</div>
-        </div>
-
-        {/* Product Price (per item) */}
-        <div className="comparison__metric-row comparison__metric-row--info" key="product-price">
-          <div className="comparison__metric-label">Product Price (per item)</div>
-          <div className="comparison__metric-value">
-            {formatCurrency(product1.purchase_price_usd)}
-          </div>
-          <div className="comparison__metric-value">
-            {formatCurrency(product2.purchase_price_usd)}
-          </div>
-        </div>
-
-        {/* Items needed per year */}
-        <div className="comparison__metric-row comparison__metric-row--info" key="items-per-year">
-          <div className="comparison__metric-label">Products needed per year</div>
-          <div className="comparison__metric-value">
-            {(() => {
-              try {
-                const val1 = (product1?.uses_per_year || 0) / (product1?.average_lifespan_uses || 1);
-                return val1 >= 1 ? Math.round(val1) : val1.toFixed(1);
-              } catch (e) {
-                return 'N/A';
-              }
-            })()}
-          </div>
-          <div className="comparison__metric-value">
-            {(() => {
-              try {
-                const val2 = (product2?.uses_per_year || 0) / (product2?.average_lifespan_uses || 1);
-                return val2 >= 1 ? Math.round(val2) : val2.toFixed(1);
-              } catch (e) {
-                return 'N/A';
-              }
-            })()}
-          </div>
-        </div>
-
-        {/* Annual Cost (normalized by usage) */}
-        {renderMetricRow('Annual Cost', comparisons.cost, formatters.cost)}
-        {renderMetricRow('CO₂e Emissions', comparisons.ghg, formatters.ghg)}
-        {renderMetricRow('Water Usage', comparisons.water, formatters.water)}
-        {renderMetricRow('Energy', comparisons.energy, formatters.energy)}
-        {renderMetricRow('Land Use', comparisons.land, formatters.land)}
-      </div>
-
       {/* PHASE BREAKDOWNS */}
       <div className="comparison__phase-section">
         <h3>Environmental Impact Details</h3>
         <div className="comparison__phase-toggle-row">
           <button
-            className={showPhase ? 'comparison__phase-toggle active' : 'comparison__phase-toggle'}
-            onClick={() => setShowPhase(true)}
+            className={!groupByPhase ? 'comparison__phase-toggle active' : 'comparison__phase-toggle'}
+            onClick={() => setGroupByPhase(false)}
           >
-            Breakdown by Phase
+            Group by Metric
           </button>
           <button
-            className={!showPhase ? 'comparison__phase-toggle active' : 'comparison__phase-toggle'}
-            onClick={() => setShowPhase(false)}
+            className={groupByPhase ? 'comparison__phase-toggle active' : 'comparison__phase-toggle'}
+            onClick={() => setGroupByPhase(true)}
           >
-            Show Totals Only
+            Group by Phase
           </button>
         </div>
-        {renderMetricTable('CO₂e Emissions', 'greenhouse_gas_kg', formatters.ghg, phaseBreakdowns.ghg, 'greenhouse_gas_kg')}
-        {renderMetricTable('Water Usage', 'water_liters', formatters.water, phaseBreakdowns.water, 'water_liters')}
-        {renderMetricTable('Energy', 'energy_kwh', formatters.energy, phaseBreakdowns.energy, 'energy_kwh')}
-        {renderMetricTable('Land Use', 'land_m2', formatters.land, {
-          product1: getAnnualImpactByPhase(product1, 'land_m2'),
-          product2: getAnnualImpactByPhase(product2, 'land_m2'),
-        }, 'land_m2')}
-        {renderMetricTable('Cost', 'cost_usd', formatters.cost, {
-          product1: getAnnualImpactByPhase(product1, 'cost_usd'),
-          product2: getAnnualImpactByPhase(product2, 'cost_usd'),
-        }, 'cost_usd')}
+        {!groupByPhase ? (
+          <>
+            {renderMetricTable('CO₂e Emissions', 'greenhouse_gas_kg', formatters.ghg, phaseBreakdowns.ghg, 'greenhouse_gas_kg')}
+            {renderMetricTable('Water Usage', 'water_liters', formatters.water, phaseBreakdowns.water, 'water_liters')}
+            {renderMetricTable('Energy', 'energy_kwh', formatters.energy, phaseBreakdowns.energy, 'energy_kwh')}
+            {renderMetricTable('Land Use', 'land_m2', formatters.land, {
+              product1: getAnnualImpactByPhase(product1, 'land_m2'),
+              product2: getAnnualImpactByPhase(product2, 'land_m2'),
+            }, 'land_m2')}
+            {renderMetricTable('Cost', 'cost_usd', formatters.cost, {
+              product1: getAnnualImpactByPhase(product1, 'cost_usd'),
+              product2: getAnnualImpactByPhase(product2, 'cost_usd'),
+            }, 'cost_usd')}
+          </>
+        ) : (
+          <>
+            {renderPhaseTable('production', 'Production')}
+            {renderPhaseTable('transport', 'Transport')}
+            {renderPhaseTable('use', 'Use & Care')}
+            {renderPhaseTable('end_of_life', 'End of Life')}
+          </>
+        )}
       </div>
 
       <div className="comparison__footer">
