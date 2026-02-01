@@ -55,6 +55,13 @@ export function ComparisonView({ product1, product2 }) {
 
   // Helper to get annual impact (all phases if available)
   function getFullAnnualImpact(product, metric) {
+    if (metric === 'cost_usd') {
+      // Annual cost = purchase price * items needed per year
+      const usesPerYear = product.uses_per_year || 1;
+      const lifespanUses = product.average_lifespan_uses || 1;
+      const itemsPerYear = usesPerYear / lifespanUses;
+      return (product.purchase_price_usd || 0) * itemsPerYear;
+    }
     const phase = getAnnualImpactByPhase(product, metric);
     if (phase && typeof phase.total === 'number') return phase.total;
     return product.impacts[metric] || 0;
