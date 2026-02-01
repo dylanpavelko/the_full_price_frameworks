@@ -13,6 +13,10 @@ import {
   formatWater,
   formatEnergy,
   formatLand,
+  formatGreenhouseGasImperial,
+  formatWaterImperial,
+  formatEnergyImperial,
+  formatLandImperial,
 } from '../utils/formatting.js';
 import { compareProducts, getItemsPerYear, getAnnualImpactByPhase } from '../utils/comparison.js';
 import './ComparisonView.css';
@@ -20,6 +24,8 @@ import './ComparisonView.css';
 export function ComparisonView({ product1, product2 }) {
   // Toggle between sum and phase breakdown view
   const [showPhase, setShowPhase] = useState(true);
+  // Toggle between metric and imperial units
+  const [useImperial, setUseImperial] = useState(false);
   if (!product1 || !product2) {
     return null;
   }
@@ -88,6 +94,15 @@ export function ComparisonView({ product1, product2 }) {
     water: compareProductsFull(product1, product2, 'water_liters'),
     energy: compareProductsFull(product1, product2, 'energy_kwh'),
     land: compareProductsFull(product1, product2, 'land_m2'),
+  };
+
+  // Choose formatters based on unit toggle
+  const formatters = {
+    cost: formatCurrency,
+    ghg: useImperial ? formatGreenhouseGasImperial : formatGreenhouseGas,
+    water: useImperial ? formatWaterImperial : formatWater,
+    energy: useImperial ? formatEnergyImperial : formatEnergy,
+    land: useImperial ? formatLandImperial : formatLand,
   };
 
   // Get phase breakdowns for each metric
@@ -227,14 +242,12 @@ export function ComparisonView({ product1, product2 }) {
     return (
       <div className="comparison__metric-row" key={label}>
         <div className="comparison__metric-label">{label}</div>
-        
         <div className={`comparison__metric-value ${
           comparison.winner === product1.name ? 'winner' : 'loser'
         }`}>
           {formatFn(comparison.product1Impact)}
           {comparison.winner === product1.name && <span className="winner-badge">✓</span>}
         </div>
-        
         <div className={`comparison__metric-value ${
           comparison.winner === product2.name ? 'winner' : 'loser'
         }`}>
@@ -291,8 +304,131 @@ export function ComparisonView({ product1, product2 }) {
     );
   };
   // (end of helpers, main return block should follow)
+
   return (
     <div className="comparison">
+      <div className="comparison__header">
+        <h2>Product Comparison</h2>
+        <p className="comparison__winner-text">
+          {wins.product1 > wins.product2
+            ? `${product1.name} is more sustainable (${wins.product1}/${Object.keys(comparisons).length} metrics)${breakEvenText}`
+            : wins.product2 > wins.product1
+            ? `${product2.name} is more sustainable (${wins.product2}/${Object.keys(comparisons).length} metrics)${breakEvenText}`
+            : `It's a tie - both products have pros and cons${breakEvenText}`}
+        </p>
+        {breakEvenDisplay.length > 0 && (
+          <div className="comparison__breakeven-section">
+            <strong>Time to Break-Even by Metric:</strong>
+            {breakEvenDisplay}
+          </div>
+        )}
+        {/* DEBUG: Show raw break-even calculation for all metrics */}
+        <div style={{background:'#ffe',color:'#333',padding:'0.5rem',margin:'1rem 0',fontSize:'0.95em',border:'1px solid #cc0'}}>
+          <strong>DEBUG (Break-Even by Metric):</strong>
+          <pre style={{margin:0}}>{JSON.stringify(debugBreakEvens, null, 2)}</pre>
+        </div>
+      </div>
+
+      {/* SUMMARY TABLE */}
+      <div className="comparison__table">
+        <div className="comparison__header-row">
+          <div className="comparison__metric-label">Metric</div>
+          <div className="comparison__product-name">{product1.name}</div>
+          <div className="comparison__product-name">{product2.name}</div>
+        </div>
+        {/* Product Price (per item) */}
+        <div className="comparison__metric-row comparison__metric-row--info" key="product-price">
+          <div className="comparison__metric-label">Product Price (per item)</div>
+          <div className="comparison__metric-value">
+            {formatCurrency(product1.purchase_price_usd)}
+          </div>
+          <div className="comparison__metric-value">
+            {formatCurrency(product2.purchase_price_usd)}
+          </div>
+        </div>
+        {/* Items needed per year */}
+        <div className="comparison__metric-row comparison__metric-row--info" key="items-per-year">
+          <div className="comparison__metric-label">Products needed per year</div>
+          <div className="comparison__metric-value">
+            {(() => {
+              try {
+                const val1 = (product1?.uses_per_year || 0) / (product1?.average_lifespan_uses || 1);
+                return val1 >= 1 ? Math.round(val1) : val1.toFixed(1);
+              } catch (e) {
+                return 'N/A';
+              }
+            })()}
+          </div>
+          <div className="comparison__metric-value">
+            {(() => {
+              try {
+                const val2 = (product2?.uses_per_year || 0) / (product2?.average_lifespan_uses || 1);
+                return val2 >= 1 ? Math.round(val2) : val2.toFixed(1);
+              } catch (e) {
+                return 'N/A';
+              }
+            })()}
+          </div>
+        </div>
+        {/* Annual Cost (normalized by usage) */}
+        {renderMetricRow('Annual Cost', comparisons.cost, formatters.cost)}
+        {renderMetricRow('CO₂e Emissions', comparisons.ghg, formatters.ghg)}
+        {renderMetricRow('Water Usage', comparisons.water, formatters.water)}
+        {renderMetricRow('Energy', comparisons.energy, formatters.energy)}
+        {renderMetricRow('Land Use', comparisons.land, formatters.land)}
+      </div>
+
+      {/* Unit toggle below summary table */}
+      <div className="comparison__unit-toggle-row" style={{ margin: '1.5rem 0', display: 'flex', justifyContent: 'center' }}>
+        <div className="comparison__unit-toggle-segmented" role="group" aria-label="Unit Toggle">
+          <button
+            className={useImperial ? 'comparison__unit-toggle' : 'comparison__unit-toggle active'}
+            aria-pressed={!useImperial}
+            onClick={() => setUseImperial(false)}
+            tabIndex={useImperial ? 0 : -1}
+            style={{
+              borderTopLeftRadius: '1.5em',
+              borderBottomLeftRadius: '1.5em',
+              borderTopRightRadius: 0,
+              borderBottomRightRadius: 0,
+              borderRight: '1px solid #ccc',
+              background: !useImperial ? '#2d7be5' : '#f5f5f5',
+              color: !useImperial ? '#fff' : '#333',
+              fontWeight: !useImperial ? 'bold' : 'normal',
+              zIndex: !useImperial ? 2 : 1,
+              transition: 'background 0.2s, color 0.2s',
+              boxShadow: !useImperial ? '0 2px 8px #2d7be522' : 'none',
+              outline: !useImperial ? '2px solid #2d7be5' : 'none',
+            }}
+          >
+            Metric
+          </button>
+          <button
+            className={useImperial ? 'comparison__unit-toggle active' : 'comparison__unit-toggle'}
+            aria-pressed={useImperial}
+            onClick={() => setUseImperial(true)}
+            tabIndex={!useImperial ? 0 : -1}
+            style={{
+              borderTopRightRadius: '1.5em',
+              borderBottomRightRadius: '1.5em',
+              borderTopLeftRadius: 0,
+              borderBottomLeftRadius: 0,
+              borderLeft: '1px solid #ccc',
+              background: useImperial ? '#2d7be5' : '#f5f5f5',
+              color: useImperial ? '#fff' : '#333',
+              fontWeight: useImperial ? 'bold' : 'normal',
+              zIndex: useImperial ? 2 : 1,
+              transition: 'background 0.2s, color 0.2s',
+              boxShadow: useImperial ? '0 2px 8px #2d7be522' : 'none',
+              outline: useImperial ? '2px solid #2d7be5' : 'none',
+            }}
+          >
+            Imperial
+          </button>
+        </div>
+      </div>
+
+
       <div className="comparison__header">
         <h2>Product Comparison</h2>
         <p className="comparison__winner-text">
@@ -360,15 +496,11 @@ export function ComparisonView({ product1, product2 }) {
         </div>
 
         {/* Annual Cost (normalized by usage) */}
-        {renderMetricRow('Annual Cost', comparisons.cost, (val) => formatCurrency(val))}
-        {/* Greenhouse Gas */}
-        {renderMetricRow('CO₂e Emissions', comparisons.ghg, (val) => formatGreenhouseGas(val))}
-        {/* Water */}
-        {renderMetricRow('Water Usage', comparisons.water, (val) => formatWater(val))}
-        {/* Energy */}
-        {renderMetricRow('Energy', comparisons.energy, (val) => formatEnergy(val))}
-        {/* Land */}
-        {renderMetricRow('Land Use', comparisons.land, (val) => formatLand(val))}
+        {renderMetricRow('Annual Cost', comparisons.cost, formatters.cost)}
+        {renderMetricRow('CO₂e Emissions', comparisons.ghg, formatters.ghg)}
+        {renderMetricRow('Water Usage', comparisons.water, formatters.water)}
+        {renderMetricRow('Energy', comparisons.energy, formatters.energy)}
+        {renderMetricRow('Land Use', comparisons.land, formatters.land)}
       </div>
 
       {/* PHASE BREAKDOWNS */}
@@ -388,14 +520,14 @@ export function ComparisonView({ product1, product2 }) {
             Show Totals Only
           </button>
         </div>
-        {renderMetricTable('CO₂e Emissions', 'greenhouse_gas_kg', formatGreenhouseGas, phaseBreakdowns.ghg, 'greenhouse_gas_kg')}
-        {renderMetricTable('Water Usage', 'water_liters', formatWater, phaseBreakdowns.water, 'water_liters')}
-        {renderMetricTable('Energy', 'energy_kwh', formatEnergy, phaseBreakdowns.energy, 'energy_kwh')}
-        {renderMetricTable('Land Use', 'land_m2', formatLand, {
+        {renderMetricTable('CO₂e Emissions', 'greenhouse_gas_kg', formatters.ghg, phaseBreakdowns.ghg, 'greenhouse_gas_kg')}
+        {renderMetricTable('Water Usage', 'water_liters', formatters.water, phaseBreakdowns.water, 'water_liters')}
+        {renderMetricTable('Energy', 'energy_kwh', formatters.energy, phaseBreakdowns.energy, 'energy_kwh')}
+        {renderMetricTable('Land Use', 'land_m2', formatters.land, {
           product1: getAnnualImpactByPhase(product1, 'land_m2'),
           product2: getAnnualImpactByPhase(product2, 'land_m2'),
         }, 'land_m2')}
-        {renderMetricTable('Cost', 'cost_usd', formatCurrency, {
+        {renderMetricTable('Cost', 'cost_usd', formatters.cost, {
           product1: getAnnualImpactByPhase(product1, 'cost_usd'),
           product2: getAnnualImpactByPhase(product2, 'cost_usd'),
         }, 'cost_usd')}

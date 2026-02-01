@@ -1,3 +1,38 @@
+// Imperial formatters
+export function formatGreenhouseGasImperial(value) {
+  // 1 kg CO2e ≈ 2.20462 lbs CO2e
+  const lbs = value * 2.20462;
+  if (lbs >= 2000) {
+    return `${(lbs / 2000).toFixed(2)} US tons CO₂e`;
+  }
+  return `${lbs.toFixed(2)} lbs CO₂e`;
+}
+
+export function formatWaterImperial(value) {
+  // 1 liter ≈ 0.264172 gallons
+  const gallons = value * 0.264172;
+  if (gallons >= 1000) {
+    return `${(gallons / 1000).toFixed(2)} kgal`;
+  }
+  return `${gallons.toFixed(0)} gallons`;
+}
+
+export function formatEnergyImperial(value) {
+  // 1 kWh ≈ 3412.14 BTU
+  const btu = value * 3412.14;
+  if (btu >= 1000000) {
+    return `${(btu / 1000000).toFixed(2)} MMBTU`;
+  }
+  return `${btu.toFixed(0)} BTU`;
+}
+
+export function formatLandImperial(value) {
+  // 1 m² ≈ 10.7639 ft², 1 acre = 4046.86 m²
+  if (value >= 4046.86) {
+    return `${(value / 4046.86).toFixed(2)} acres`;
+  }
+  return `${(value * 10.7639).toFixed(2)} ft²`;
+}
 /**
  * Utility functions for formatting impact data for display.
  * 
@@ -37,9 +72,6 @@ export function formatGreenhouseGas(value) {
  * @returns {string} Formatted string with appropriate unit
  */
 export function formatWater(value) {
-  if (value >= 1000) {
-    return `${(value / 1000).toFixed(2)} m³`;
-  }
   return `${value.toFixed(0)} liters`;
 }
 
