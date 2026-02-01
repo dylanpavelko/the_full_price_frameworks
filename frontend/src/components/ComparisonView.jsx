@@ -1,9 +1,12 @@
+
+
 /**
  * ComparisonView component - displays side-by-side product comparison
  * 
  * Shows two products with their impacts and highlights which is better/worse
  * for each environmental metric. Now includes lifecycle phase breakdown.
  */
+import React, { useState } from 'react';
 import {
   formatCurrency,
   formatGreenhouseGas,
@@ -15,17 +18,69 @@ import { compareProducts, getItemsPerYear, getAnnualImpactByPhase } from '../uti
 import './ComparisonView.css';
 
 export function ComparisonView({ product1, product2 }) {
+  // Toggle between sum and phase breakdown view
+  const [showPhase, setShowPhase] = useState(true);
   if (!product1 || !product2) {
     return null;
   }
 
-  // Compare products for each impact metric
+  // ...existing code...
+
+  // ...existing code...
+
+  // Calculate break-even for all metrics (cost, ghg, water, energy, land)
+  const breakEvenMetrics = [
+    { key: 'cost_usd', label: 'Cost' },
+    { key: 'greenhouse_gas_kg', label: 'CO₂e Emissions' },
+    { key: 'water_liters', label: 'Water Usage' },
+    { key: 'energy_kwh', label: 'Energy' },
+    { key: 'land_m2', label: 'Land Use' },
+  ];
+
+  // DEBUG: Show raw break-even calculation values for all metrics
+  const debugBreakEvens = breakEvenMetrics.map(({ key, label }) => {
+    const p1Annual = product1.impacts[key];
+    const p2Annual = product2.impacts[key];
+    const t1 = getAdvancedBreakEven(product1, product2, key);
+    const t2 = getAdvancedBreakEven(product2, product1, key);
+    return {
+      metric: label,
+      p1: p1Annual,
+      p2: p2Annual,
+      break_even_1: t1,
+      break_even_2: t2,
+      min_break_even: t1 && t2 ? Math.min(t1, t2) : t1 || t2 || null
+    };
+  });
+
+  // Helper to get annual impact (all phases if available)
+  function getFullAnnualImpact(product, metric) {
+    const phase = getAnnualImpactByPhase(product, metric);
+    if (phase && typeof phase.total === 'number') return phase.total;
+    return product.impacts[metric] || 0;
+  }
+
+  // Compare products for each impact metric using full annual impact
+  function compareProductsFull(product1, product2, metric) {
+    const impact1 = getFullAnnualImpact(product1, metric);
+    const impact2 = getFullAnnualImpact(product2, metric);
+    const difference = impact1 - impact2;
+    const percentDifference = impact2 !== 0 ? (difference / impact2) * 100 : 0;
+    return {
+      difference,
+      percentDifference,
+      winner: difference > 0 ? product2.name : product1.name,
+      product1Impact: impact1,
+      product2Impact: impact2,
+    };
+  }
+
   const comparisons = {
-    cost: compareProducts(product1, product2, 'cost_usd'),
-    ghg: compareProducts(product1, product2, 'greenhouse_gas_kg'),
-    water: compareProducts(product1, product2, 'water_liters'),
-    energy: compareProducts(product1, product2, 'energy_kwh'),
-    land: compareProducts(product1, product2, 'land_m2'),
+    cost: compareProductsFull(product1, product2, 'cost_usd'),
+    ghg: compareProductsFull(product1, product2, 'greenhouse_gas_kg'),
+    water: compareProductsFull(product1, product2, 'water_liters'),
+    energy: compareProductsFull(product1, product2, 'energy_kwh'),
+    land: compareProductsFull(product1, product2, 'land_m2'),
   };
 
   // Get phase breakdowns for each metric
@@ -43,6 +98,113 @@ export function ComparisonView({ product1, product2 }) {
       product2: getAnnualImpactByPhase(product2, 'energy_kwh'),
     },
   };
+
+  // Calculate break-even points for each metric
+  function getBreakEvenPoints(product1, product2) {
+    const metrics = [
+      { key: 'cost_usd', label: 'Cost', format: formatCurrency },
+      { key: 'greenhouse_gas_kg', label: 'CO₂e Emissions', format: formatGreenhouseGas },
+      { key: 'water_liters', label: 'Water Usage', format: formatWater },
+      { key: 'energy_kwh', label: 'Energy', format: formatEnergy },
+      { key: 'land_m2', label: 'Land Use', format: formatLand },
+    ];
+    const breakEvens = [];
+    metrics.forEach(({ key }) => {
+      const p1Annual = product1.impacts[key];
+      const p2Annual = product2.impacts[key];
+      if (p1Annual === p2Annual || p1Annual === 0 || p2Annual === 0) {
+        breakEvens.push(null);
+        return;
+      }
+      let years = null;
+      if (key === 'cost_usd') {
+        const priceDiff = product1.purchase_price_usd - product2.purchase_price_usd;
+        const annualDiff = p2Annual - p1Annual;
+        if (annualDiff !== 0) {
+          years = priceDiff / annualDiff;
+        }
+      }
+      if (years && years > 0 && years < 100) {
+        breakEvens.push(years);
+      } else {
+        breakEvens.push(null);
+      }
+    });
+    return breakEvens;
+  }
+
+  // Advanced break-even calculation for each metric
+  function getAdvancedBreakEven(productA, productB, metric) {
+    // Upfront impact: for cost use purchase_price_usd, for others sum all non-use phases
+    let upfrontA, upfrontB;
+    if (metric === 'cost_usd') {
+      upfrontA = productA.purchase_price_usd;
+      upfrontB = productB.purchase_price_usd;
+    } else {
+      // Sum production, transport, end_of_life for the metric
+      const getUpfront = (product) => {
+        if (!product.impacts_by_phase) return 0;
+        const phases = product.impacts_by_phase;
+        const usesPerYear = product.uses_per_year || 1;
+        const lifespanUses = product.average_lifespan_uses || 1;
+        const itemsPerYear = usesPerYear / lifespanUses;
+        // Upfront = (production + transport + end_of_life) * itemsPerYear
+        const production = (phases.production?.[metric] || 0);
+        const transport = (phases.transport?.[metric] || 0);
+        const endOfLife = (phases.end_of_life?.[metric] || 0);
+        return (production + transport + endOfLife) * itemsPerYear;
+      };
+      upfrontA = getUpfront(productA);
+      upfrontB = getUpfront(productB);
+    }
+    // Annual impact (already normalized, all phases)
+    const annualA = getFullAnnualImpact(productA, metric);
+    const annualB = getFullAnnualImpact(productB, metric);
+    // If annual impacts are equal, no break-even
+    if (annualA === annualB) return null;
+    // If productA is always better, no break-even
+    if (upfrontA <= upfrontB && annualA <= annualB) return null;
+    // If productB is always better, no break-even
+    if (upfrontB <= upfrontA && annualB <= annualA) return null;
+    // Solve for t: upfrontA + t*annualA = upfrontB + t*annualB
+    // => t = (upfrontA - upfrontB) / (annualB - annualA)
+    const t = (upfrontA - upfrontB) / (annualB - annualA);
+    if (t > 0 && t < 100) return t;
+    return null;
+  }
+
+  // (removed duplicate breakEvenMetrics declaration)
+  // Calculate break-even for both product orderings and take the minimum positive value
+  const breakEvenValues = breakEvenMetrics.map(({ key }) => {
+    const t1 = getAdvancedBreakEven(product1, product2, key);
+    const t2 = getAdvancedBreakEven(product2, product1, key);
+    if (t1 && t2) return Math.min(t1, t2);
+    return t1 || t2 || null;
+  });
+  // Find the longest break-even (max value)
+  const longestBreakEven = breakEvenValues.filter(v => v !== null).reduce((max, v) => v > max ? v : max, 0);
+  let breakEvenText = '';
+  if (longestBreakEven > 0) {
+    if (longestBreakEven < 0.5) {
+      breakEvenText = ` (longest break-even: ${Math.round(longestBreakEven * 365)} days)`;
+    } else {
+      breakEvenText = ` (longest break-even: ${longestBreakEven.toFixed(1)} years)`;
+    }
+  }
+
+  // Prepare break-even display for all metrics
+  const breakEvenDisplay = breakEvenMetrics.map(({ key, label }, idx) => {
+    const val = breakEvenValues[idx];
+    if (val && val > 0 && val < 100) {
+      if (val < 0.5) {
+        const days = Math.round(val * 365);
+        return (<div key={key}><strong>{label}:</strong> {days} days</div>);
+      } else {
+        return (<div key={key}><strong>{label}:</strong> {val.toFixed(1)} years</div>);
+      }
+    }
+    return null;
+  }).filter(Boolean);
 
   // Determine which product wins overall
   const wins = Object.values(comparisons).reduce((acc, comp) => {
@@ -76,78 +238,93 @@ export function ComparisonView({ product1, product2 }) {
     );
   };
 
-  const renderPhaseBreakdown = (label, impactKey, formatFn, breakdown) => {
-    if (!breakdown.product1 || !breakdown.product2) return null;
-    
+  // Render a side-by-side table for a metric, either as sum or by phase
+  const renderMetricTable = (label, impactKey, formatFn, breakdown, sumKey) => {
+    const phases = [
+      { key: 'production', label: 'Production' },
+      { key: 'transport', label: 'Transport' },
+      { key: 'use', label: 'Use & Care' },
+      { key: 'end_of_life', label: 'End of Life' },
+    ];
     return (
-      <div key={`${label}-phases`} className="comparison__phase-breakdown">
-        <div className="comparison__phase-label">↳ {label} by Lifecycle Phase:</div>
-        
-        {/* Production */}
-        <div className="comparison__phase-row">
-          <div className="comparison__phase-phase">Production</div>
-          <div className="comparison__phase-value">
-            {formatFn(breakdown.product1.production)}
-          </div>
-          <div className="comparison__phase-value">
-            {formatFn(breakdown.product2.production)}
-          </div>
+      <div className="comparison__phase-table" key={label}>
+        <div className="comparison__phase-table-header-row">
+          <div className="comparison__phase-table-label">{label}</div>
+          <div className="comparison__phase-table-product">{product1.name}</div>
+          <div className="comparison__phase-table-product">{product2.name}</div>
         </div>
-        
-        {/* Transport */}
-        <div className="comparison__phase-row">
-          <div className="comparison__phase-phase">Transport</div>
-          <div className="comparison__phase-value">
-            {formatFn(breakdown.product1.transport)}
-          </div>
-          <div className="comparison__phase-value">
-            {formatFn(breakdown.product2.transport)}
-          </div>
-        </div>
-        
-        {/* Use */}
-        <div className="comparison__phase-row">
-          <div className="comparison__phase-phase">Use & Care</div>
-          <div className="comparison__phase-value">
-            {formatFn(breakdown.product1.use)}
-          </div>
-          <div className="comparison__phase-value">
-            {formatFn(breakdown.product2.use)}
-          </div>
-        </div>
-        
-        {/* End of Life */}
-        <div className="comparison__phase-row">
-          <div className="comparison__phase-phase">End of Life</div>
-          <div className="comparison__phase-value">
-            {formatFn(breakdown.product1.end_of_life)}
-          </div>
-          <div className="comparison__phase-value">
-            {formatFn(breakdown.product2.end_of_life)}
-          </div>
-        </div>
+        {showPhase
+          ? phases.map(phase => (
+              <div className="comparison__phase-table-row" key={phase.key}>
+                <div className="comparison__phase-table-phase">{phase.label}</div>
+                <div className="comparison__phase-table-value">
+                  {breakdown.product1 && breakdown.product1[phase.key] != null
+                    ? formatFn(breakdown.product1[phase.key])
+                    : '0'}
+                </div>
+                <div className="comparison__phase-table-value">
+                  {breakdown.product2 && breakdown.product2[phase.key] != null
+                    ? formatFn(breakdown.product2[phase.key])
+                    : '0'}
+                </div>
+              </div>
+            ))
+          : (
+              <div className="comparison__phase-table-row" key="sum">
+                <div className="comparison__phase-table-phase">Total</div>
+                <div className="comparison__phase-table-value">
+                  {formatFn(product1.impacts[sumKey])}
+                </div>
+                <div className="comparison__phase-table-value">
+                  {formatFn(product2.impacts[sumKey])}
+                </div>
+              </div>
+            )}
       </div>
     );
   };
-
+  // (end of helpers, main return block should follow)
   return (
     <div className="comparison">
       <div className="comparison__header">
         <h2>Product Comparison</h2>
         <p className="comparison__winner-text">
           {wins.product1 > wins.product2
-            ? `${product1.name} is more sustainable (${wins.product1}/${Object.keys(comparisons).length} metrics)`
+            ? `${product1.name} is more sustainable (${wins.product1}/${Object.keys(comparisons).length} metrics)${breakEvenText}`
             : wins.product2 > wins.product1
-            ? `${product2.name} is more sustainable (${wins.product2}/${Object.keys(comparisons).length} metrics)`
-            : "It's a tie - both products have pros and cons"}
+            ? `${product2.name} is more sustainable (${wins.product2}/${Object.keys(comparisons).length} metrics)${breakEvenText}`
+            : `It's a tie - both products have pros and cons${breakEvenText}`}
         </p>
+        {breakEvenDisplay.length > 0 && (
+          <div className="comparison__breakeven-section">
+            <strong>Time to Break-Even by Metric:</strong>
+            {breakEvenDisplay}
+          </div>
+        )}
+        {/* DEBUG: Show raw break-even calculation for all metrics */}
+        <div style={{background:'#ffe',color:'#333',padding:'0.5rem',margin:'1rem 0',fontSize:'0.95em',border:'1px solid #cc0'}}>
+          <strong>DEBUG (Break-Even by Metric):</strong>
+          <pre style={{margin:0}}>{JSON.stringify(debugBreakEvens, null, 2)}</pre>
+        </div>
       </div>
 
+      {/* SUMMARY TABLE */}
       <div className="comparison__table">
         <div className="comparison__header-row">
           <div className="comparison__metric-label">Metric</div>
           <div className="comparison__product-name">{product1.name}</div>
           <div className="comparison__product-name">{product2.name}</div>
+        </div>
+
+        {/* Product Price (per item) */}
+        <div className="comparison__metric-row comparison__metric-row--info" key="product-price">
+          <div className="comparison__metric-label">Product Price (per item)</div>
+          <div className="comparison__metric-value">
+            {formatCurrency(product1.purchase_price_usd)}
+          </div>
+          <div className="comparison__metric-value">
+            {formatCurrency(product2.purchase_price_usd)}
+          </div>
         </div>
 
         {/* Items needed per year */}
@@ -175,31 +352,46 @@ export function ComparisonView({ product1, product2 }) {
           </div>
         </div>
 
-        {/* Cost */}
-        {renderMetricRow('Cost', comparisons.cost, (val) => formatCurrency(val))}
-
+        {/* Annual Cost (normalized by usage) */}
+        {renderMetricRow('Annual Cost', comparisons.cost, (val) => formatCurrency(val))}
         {/* Greenhouse Gas */}
-        {renderMetricRow('CO₂e Emissions', comparisons.ghg, (val) =>
-          formatGreenhouseGas(val)
-        )}
-        {renderPhaseBreakdown('CO₂e Emissions', 'greenhouse_gas_kg', formatGreenhouseGas, phaseBreakdowns.ghg)}
-
+        {renderMetricRow('CO₂e Emissions', comparisons.ghg, (val) => formatGreenhouseGas(val))}
         {/* Water */}
-        {renderMetricRow('Water Usage', comparisons.water, (val) =>
-          formatWater(val)
-        )}
-        {renderPhaseBreakdown('Water Usage', 'water_liters', formatWater, phaseBreakdowns.water)}
-
+        {renderMetricRow('Water Usage', comparisons.water, (val) => formatWater(val))}
         {/* Energy */}
-        {renderMetricRow('Energy', comparisons.energy, (val) =>
-          formatEnergy(val)
-        )}
-        {renderPhaseBreakdown('Energy', 'energy_kwh', formatEnergy, phaseBreakdowns.energy)}
-
+        {renderMetricRow('Energy', comparisons.energy, (val) => formatEnergy(val))}
         {/* Land */}
-        {renderMetricRow('Land Use', comparisons.land, (val) =>
-          formatLand(val)
-        )}
+        {renderMetricRow('Land Use', comparisons.land, (val) => formatLand(val))}
+      </div>
+
+      {/* PHASE BREAKDOWNS */}
+      <div className="comparison__phase-section">
+        <h3>Environmental Impact Details</h3>
+        <div className="comparison__phase-toggle-row">
+          <button
+            className={showPhase ? 'comparison__phase-toggle active' : 'comparison__phase-toggle'}
+            onClick={() => setShowPhase(true)}
+          >
+            Breakdown by Phase
+          </button>
+          <button
+            className={!showPhase ? 'comparison__phase-toggle active' : 'comparison__phase-toggle'}
+            onClick={() => setShowPhase(false)}
+          >
+            Show Totals Only
+          </button>
+        </div>
+        {renderMetricTable('CO₂e Emissions', 'greenhouse_gas_kg', formatGreenhouseGas, phaseBreakdowns.ghg, 'greenhouse_gas_kg')}
+        {renderMetricTable('Water Usage', 'water_liters', formatWater, phaseBreakdowns.water, 'water_liters')}
+        {renderMetricTable('Energy', 'energy_kwh', formatEnergy, phaseBreakdowns.energy, 'energy_kwh')}
+        {renderMetricTable('Land Use', 'land_m2', formatLand, {
+          product1: getAnnualImpactByPhase(product1, 'land_m2'),
+          product2: getAnnualImpactByPhase(product2, 'land_m2'),
+        }, 'land_m2')}
+        {renderMetricTable('Cost', 'cost_usd', formatCurrency, {
+          product1: getAnnualImpactByPhase(product1, 'cost_usd'),
+          product2: getAnnualImpactByPhase(product2, 'cost_usd'),
+        }, 'cost_usd')}
       </div>
 
       <div className="comparison__footer">

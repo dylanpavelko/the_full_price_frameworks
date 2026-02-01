@@ -126,11 +126,12 @@ class Product(models.Model):
     def get_total_impact(self):
         """
         Calculate the total environmental impact of this product by summing
-        the impacts of all its components (materials with weights).
-        
+        the impacts from all lifecycle phases (production, transport, end_of_life, use).
         Returns:
-            dict: Contains totals for greenhouse_gas_kg, water_liters, energy_kwh, land_m2
+            dict: Contains totals for greenhouse_gas_kg, water_liters, energy_kwh, land_m2, cost_usd
         """
+        # Get the phase breakdown
+        phases = self.get_impact_by_phase()
         impact = {
             'greenhouse_gas_kg': 0,
             'water_liters': 0,
@@ -138,18 +139,30 @@ class Product(models.Model):
             'land_m2': 0,
             'cost_usd': 0,
         }
-        
-        # Sum up impacts from each component
-        for component in self.components.all():
-            impact['greenhouse_gas_kg'] += component.get_greenhouse_gas_impact()
-            impact['water_liters'] += component.get_water_impact()
-            impact['energy_kwh'] += component.get_energy_impact()
-            impact['land_m2'] += component.get_land_impact()
-            impact['cost_usd'] += component.get_cost_impact()
-        
-        # Add the purchase price itself to the cost
-        impact['cost_usd'] += self.purchase_price_usd
-        
+        # Sum each metric across all phases except cost_usd
+        for phase in phases.values():
+            for key in impact.keys():
+                if key != 'cost_usd':
+                    impact[key] += phase.get(key, 0)
+
+        # --- Annualized cost calculation ---
+
+
+        # --- Annualize all metrics using the same logic ---
+        uses_per_year = self.uses_per_year or 1
+        lifespan_uses = self.average_lifespan_uses or 1
+        metrics = ['greenhouse_gas_kg', 'water_liters', 'energy_kwh', 'land_m2', 'cost_usd']
+        for metric in metrics:
+            # Upfront impact per item (sum of production, transport, end_of_life)
+            upfront = (
+                phases['production'][metric] +
+                phases['transport'][metric] +
+                phases['end_of_life'][metric]
+            )
+            annualized_upfront = (upfront / lifespan_uses) * uses_per_year
+            annual_use = phases['use'][metric]
+            impact[metric] = annualized_upfront + annual_use
+
         return impact
 
     def get_impact_by_phase(self):
@@ -218,12 +231,12 @@ class Product(models.Model):
                     phases[phase]['land_m2'] += component.get_weight_kg() * component.material.end_of_life_land_m2_per_kg
                     phases[phase]['cost_usd'] += component.get_weight_kg() * component.material.end_of_life_cost_per_kg
         
-        # Add use phase impacts (these are per use, so multiply by average_lifespan_uses)
-        phases['use']['greenhouse_gas_kg'] = self.use_co2e_kg_per_use * self.average_lifespan_uses
-        phases['use']['water_liters'] = self.use_water_liters_per_use * self.average_lifespan_uses
-        phases['use']['energy_kwh'] = self.use_energy_kwh_per_use * self.average_lifespan_uses
-        phases['use']['land_m2'] = self.use_land_m2_per_use * self.average_lifespan_uses
-        phases['use']['cost_usd'] = self.use_cost_per_use * self.average_lifespan_uses
+        # Add use phase impacts (these are per use, so multiply by uses_per_year for annualized impact)
+        phases['use']['greenhouse_gas_kg'] = self.use_co2e_kg_per_use * self.uses_per_year
+        phases['use']['water_liters'] = self.use_water_liters_per_use * self.uses_per_year
+        phases['use']['energy_kwh'] = self.use_energy_kwh_per_use * self.uses_per_year
+        phases['use']['land_m2'] = self.use_land_m2_per_use * self.uses_per_year
+        phases['use']['cost_usd'] = self.use_cost_per_use * self.uses_per_year
         
         return phases
 

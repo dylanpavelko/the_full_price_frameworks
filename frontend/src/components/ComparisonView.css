@@ -1,3 +1,7 @@
+/* Force dark text for all content in the phase section, regardless of global body color */
+.comparison__phase-section, .comparison__phase-section * {
+  color: #222 !important;
+}
 /**
  * Styles for ComparisonView component
  * 
@@ -172,19 +176,26 @@
 .comparison__phase-breakdown {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  background: #f5f5f5;
+  background: #f8faff;
   border-bottom: 1px solid #e0e0e0;
   padding: 0.75rem 1rem;
-  margin-left: 2rem;
-  font-size: 0.85rem;
+  margin-left: 1rem;
+  font-size: 1rem;
+  color: #222 !important;
+  border: 2px solid #667eea;
+  border-radius: 8px;
+  margin-bottom: 1rem;
 }
 
 .comparison__phase-label {
-  grid-column: 1;
-  color: #666;
-  font-weight: 600;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid #ddd;
+  grid-column: 1 / span 3;
+  color: #334 !important;
+  font-weight: 700;
+  padding: 0.5rem 0 0.5rem 0.5rem;
+  border-bottom: 1px solid #bbb;
+  background: #eaf0ff;
+  border-radius: 4px 4px 0 0;
+  font-size: 1.05rem;
 }
 
 .comparison__phase-row {
@@ -197,22 +208,150 @@
 }
 
 .comparison__phase-phase {
-  color: #555;
-  font-size: 0.8rem;
-  font-weight: 500;
+  color: #223 !important;
+  font-size: 0.95rem;
+  font-weight: 600;
   padding-right: 1rem;
 }
 
 .comparison__phase-value {
   text-align: center;
-  color: #333;
-  padding: 0.25rem;
+  color: #223 !important;
+  font-weight: 500;
+  padding: 0.25rem 0.5rem;
 }
 
   border-left: 3px solid #667eea;
   border-radius: 4px;
   text-align: left;
   margin-top: 0.75rem;
+}
+
+/* New phase table layout */
+.comparison__phase-table {
+  display: grid;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid #e0e0e0;
+  margin-bottom: 1.5rem;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.04);
+}
+
+.comparison__phase-table-header-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  background: #eaf0ff;
+  color: #223;
+  font-weight: 700;
+  padding: 0.75rem 0.5rem;
+  text-align: center;
+  font-size: 1.05rem;
+}
+
+.comparison__phase-table-label {
+  text-align: left;
+  font-weight: 700;
+  color: #223;
+}
+
+.comparison__phase-table-product {
+  text-align: center;
+  font-weight: 600;
+  color: #334;
+}
+
+.comparison__phase-table-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  border-bottom: 1px solid #e0e0e0;
+  align-items: center;
+  background: #f8faff;
+}
+
+.comparison__phase-table-row:last-child {
+  border-bottom: none;
+}
+
+.comparison__phase-table-phase {
+  color: #223;
+  font-size: 0.98rem;
+  font-weight: 600;
+  padding: 0.75rem 0.5rem;
+  text-align: left;
+}
+
+.comparison__phase-table-value {
+  text-align: center;
+  color: #223;
+  font-weight: 500;
+  padding: 0.75rem 0.5rem;
+  font-size: 1.05rem;
+}
+
+.comparison__phase-toggle-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.comparison__phase-toggle {
+  background: #eaf0ff;
+  color: #223;
+  border: 1px solid #667eea;
+  border-radius: 6px;
+  padding: 0.5rem 1.2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.comparison__phase-toggle.active, .comparison__phase-toggle:hover {
+  background: #667eea;
+  color: #fff;
+}
+
+/* Break-even Table */
+.comparison__breakeven-section {
+  margin: 1.5rem 0;
+  background: #fff;
+  border: 2px solid #667eea;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.08);
+}
+
+.comparison__breakeven-section h4 {
+  color: #223;
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+
+.comparison__breakeven-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  color: #222;
+}
+
+.comparison__breakeven-table th,
+.comparison__breakeven-table td {
+  border: 1px solid #e0e0e0;
+  padding: 0.5rem 1rem;
+  text-align: left;
+  color: #222;
+  font-size: 1rem;
+}
+
+.comparison__breakeven-table th {
+  background: #eaf0ff;
+  font-weight: 700;
+}
+
+.comparison__breakeven-table tr:nth-child(even) {
+  background: #f8faff;
 }
 
 /* Responsive */
