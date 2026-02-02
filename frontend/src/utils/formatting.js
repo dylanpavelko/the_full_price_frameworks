@@ -72,7 +72,14 @@ export function formatGreenhouseGas(value) {
  * @returns {string} Formatted string with appropriate unit
  */
 export function formatWater(value) {
-  return `${value.toFixed(0)} liters`;
+  if (value == null || isNaN(value)) return '0 liters';
+  if (value >= 1000000) {
+    return (value / 1000000).toFixed(2).replace(/\.00$/, '') + ' ML';
+  } else if (value >= 1000) {
+    return (value / 1000).toFixed(2).replace(/\.00$/, '') + ' m³';
+  } else {
+    return value + ' liters';
+  }
 }
 
 /**
