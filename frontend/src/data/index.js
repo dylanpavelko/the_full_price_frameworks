@@ -12,7 +12,7 @@
  */
 export async function loadProducts() {
   try {
-    const response = await fetch('/data/products.json');
+    const response = await fetch(`${import.meta.env.BASE_URL}data/products.json`);
     if (!response.ok) {
       throw new Error('Failed to load products');
     }
@@ -30,7 +30,7 @@ export async function loadProducts() {
  */
 export async function loadPosts() {
   try {
-    const response = await fetch('/data/posts.json');
+    const response = await fetch(`${import.meta.env.BASE_URL}data/posts.json`);
     if (!response.ok) {
       throw new Error('Failed to load posts');
     }
@@ -49,7 +49,7 @@ export async function loadPosts() {
  */
 export async function loadPostBySlug(slug) {
   try {
-    const response = await fetch(`/data/posts/${slug}.json`);
+    const response = await fetch(`${import.meta.env.BASE_URL}data/posts/${slug}.json`);
     if (!response.ok) {
       throw new Error('Failed to load post');
     }
