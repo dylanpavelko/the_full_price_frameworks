@@ -1,0 +1,159 @@
+{
+  "posts": [
+    {
+      "id": 1,
+      "title": "Paper vs Cotton Napkins",
+      "slug": "paper-vs-cotton-napkins",
+      "post_type": "comparison",
+      "content": "How does a paper napkin compare to a cotton cloth napkin.",
+      "excerpt": "",
+      "author": "The Full Price Team",
+      "created_at": "2026-01-18T23:29:32.860451+00:00",
+      "updated_at": "2026-01-18T23:29:32.860507+00:00",
+      "featured": false,
+      "comparison": {
+        "product_ids": [
+          1,
+          2
+        ],
+        "products": [
+          {
+            "id": 1,
+            "name": "Paper Napkin",
+            "description": "",
+            "slug": "paper-napkin",
+            "purchase_price_usd": 0.05,
+            "uses_per_year": 365.0,
+            "average_lifespan_uses": 1.0,
+            "impacts": {
+              "greenhouse_gas_kg": 1.7739000000000003,
+              "water_liters": 3301.425,
+              "energy_kwh": 9.088500000000002,
+              "land_m2": 1.314,
+              "cost_usd": 0.9526500000000001
+            },
+            "impacts_by_phase": {
+              "production": {
+                "greenhouse_gas_kg": 0.0045000000000000005,
+                "water_liters": 9.0,
+                "energy_kwh": 0.024,
+                "land_m2": 0.0036,
+                "cost_usd": 0.0024000000000000002
+              },
+              "transport": {
+                "greenhouse_gas_kg": 0.00030000000000000003,
+                "water_liters": 0.015,
+                "energy_kwh": 0.0006000000000000001,
+                "land_m2": 0.0,
+                "cost_usd": 0.00015000000000000001
+              },
+              "end_of_life": {
+                "greenhouse_gas_kg": 6e-05,
+                "water_liters": 0.03,
+                "energy_kwh": 0.00030000000000000003,
+                "land_m2": 0.0,
+                "cost_usd": 6e-05
+              },
+              "use": {
+                "greenhouse_gas_kg": 0.0,
+                "water_liters": 0.0,
+                "energy_kwh": 0.0,
+                "land_m2": 0.0,
+                "cost_usd": 0.0
+              }
+            },
+            "use_phase": {
+              "co2e_kg_per_use": 0.0,
+              "water_liters_per_use": 0.0,
+              "energy_kwh_per_use": 0.0,
+              "land_m2_per_use": 0.0,
+              "cost_per_use": 0.0
+            },
+            "components": [
+              {
+                "id": 1,
+                "material_name": "Paper",
+                "weight_grams": 3.0,
+                "impacts": {
+                  "greenhouse_gas_kg": 0.004860000000000001,
+                  "water_liters": 9.045,
+                  "energy_kwh": 0.0249,
+                  "land_m2": 0.0036,
+                  "cost_usd": 0.0026100000000000003
+                }
+              }
+            ]
+          },
+          {
+            "id": 2,
+            "name": "Cotton Napkin",
+            "description": "",
+            "slug": "cotton-napkin",
+            "purchase_price_usd": 2.0,
+            "uses_per_year": 365.0,
+            "average_lifespan_uses": 5000.0,
+            "impacts": {
+              "greenhouse_gas_kg": 3.2908399999999998,
+              "water_liters": 408.81095000000005,
+              "energy_kwh": 8.78837875,
+              "land_m2": 0.00458075,
+              "cost_usd": 2.19341275
+            },
+            "impacts_by_phase": {
+              "production": {
+                "greenhouse_gas_kg": 0.07500000000000001,
+                "water_liters": 300.0,
+                "energy_kwh": 0.375,
+                "land_m2": 0.0625,
+                "cost_usd": 0.043750000000000004
+              },
+              "transport": {
+                "greenhouse_gas_kg": 0.00375,
+                "water_liters": 0.125,
+                "energy_kwh": 0.0125,
+                "land_m2": 0.0,
+                "cost_usd": 0.0025000000000000005
+              },
+              "end_of_life": {
+                "greenhouse_gas_kg": 0.0012500000000000002,
+                "water_liters": 0.025,
+                "energy_kwh": 0.0012500000000000002,
+                "land_m2": 0.00025,
+                "cost_usd": 0.0005
+              },
+              "use": {
+                "greenhouse_gas_kg": 3.2849999999999997,
+                "water_liters": 386.90000000000003,
+                "energy_kwh": 8.76,
+                "land_m2": 0.0,
+                "cost_usd": 2.19
+              }
+            },
+            "use_phase": {
+              "co2e_kg_per_use": 0.009,
+              "water_liters_per_use": 1.06,
+              "energy_kwh_per_use": 0.024,
+              "land_m2_per_use": 0.0,
+              "cost_per_use": 0.006
+            },
+            "components": [
+              {
+                "id": 2,
+                "material_name": "Cotton",
+                "weight_grams": 25.0,
+                "impacts": {
+                  "greenhouse_gas_kg": 0.08,
+                  "water_liters": 300.15000000000003,
+                  "energy_kwh": 0.38875000000000004,
+                  "land_m2": 0.06275,
+                  "cost_usd": 0.04675000000000001
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "export_timestamp": "2026-02-01T23:14:38.215891"
+}
