@@ -6,6 +6,24 @@ export function CalculationModal({ isOpen, onClose, data, title, unit }) {
 
   const sources = data.sources || [];
 
+  const renderSource = (s) => {
+    if (!s) return null;
+    if (typeof s === 'string') return s;
+    const { url, name, note } = s;
+    return (
+      <span className="rich-source">
+        {url ? (
+          <a href={url} target="_blank" rel="noopener noreferrer" className="metric-link">
+            {name || url} <span className="info-icon">ℹ</span>
+          </a>
+        ) : (
+          <span className="source-name">{name}</span>
+        )}
+        {note && <span className="source-note"> {note}</span>}
+      </span>
+    );
+  };
+
   return (
     <div className="calc-modal-overlay" onClick={onClose}>
       <div className="calc-modal-content" onClick={e => e.stopPropagation()}>
@@ -42,7 +60,7 @@ export function CalculationModal({ isOpen, onClose, data, title, unit }) {
                     {source.source && (
                       <div className="calc-row">
                         <span className="calc-label">Source:</span>
-                        <span className="calc-source-text">{source.source}</span>
+                        <span className="calc-source-text">{renderSource(source.source)}</span>
                       </div>
                     )}
                   </div>
@@ -54,7 +72,7 @@ export function CalculationModal({ isOpen, onClose, data, title, unit }) {
                             <div key={sIdx} className="calc-sub-item">
                                 <span>{sub.item}: </span>
                                 <span>{sub.calculation}</span>
-                                {sub.source && <span className="sub-citation"> [{sub.source}]</span>}
+                                {sub.source && <span className="sub-citation"> [{renderSource(sub.source)}]</span>}
                             </div>
                         ))}
                      </div>

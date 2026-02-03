@@ -32,7 +32,10 @@ class MaterialAdmin(admin.ModelAdmin):
                 'production_water_liters_per_kg',
                 'production_energy_kwh_per_kg',
                 'production_land_m2_per_kg',
-                'production_cost_per_kg'
+                'production_cost_per_kg',
+                'production_source_url',
+                'production_source_name',
+                'production_source_note'
             )
         }),
         ('Transport Phase - Impact per Kilogram', {
@@ -42,7 +45,10 @@ class MaterialAdmin(admin.ModelAdmin):
                 'transport_water_liters_per_kg',
                 'transport_energy_kwh_per_kg',
                 'transport_land_m2_per_kg',
-                'transport_cost_per_kg'
+                'transport_cost_per_kg',
+                'transport_source_url',
+                'transport_source_name',
+                'transport_source_note'
             )
         }),
         ('End of Life Phase - Impact per Kilogram', {
@@ -52,8 +58,14 @@ class MaterialAdmin(admin.ModelAdmin):
                 'end_of_life_water_liters_per_kg',
                 'end_of_life_energy_kwh_per_kg',
                 'end_of_life_land_m2_per_kg',
-                'end_of_life_cost_per_kg'
+                'end_of_life_cost_per_kg',
+                'end_of_life_source_url',
+                'end_of_life_source_name',
+                'end_of_life_source_note'
             )
+        }),
+        ('Methodology & Notes', {
+            'fields': ('methodology',)
         }),
     )
 
@@ -100,7 +112,10 @@ class ProductAdmin(admin.ModelAdmin):
                 'use_water_liters_per_use',
                 'use_energy_kwh_per_use',
                 'use_land_m2_per_use',
-                'use_cost_per_use'
+                'use_cost_per_use',
+                'use_phase_source_url',
+                'use_phase_source_name',
+                'use_phase_source_note'
             ),
         }),
     )

@@ -45,7 +45,9 @@ class Material(models.Model):
         default=0,
         help_text="Material cost per kg"
     )
-    production_source = models.TextField(blank=True, help_text="Source citation for production phase data")
+    production_source_url = models.URLField(blank=True, help_text="Link to production data source")
+    production_source_name = models.CharField(max_length=255, blank=True, help_text="Name of the source (e.g. 'EPA 2021')")
+    production_source_note = models.TextField(blank=True, help_text="Notes about the production source or calculation")
     
     # TRANSPORT PHASE - per kilogram of material
     transport_co2e_kg_per_kg = models.FloatField(
@@ -56,7 +58,9 @@ class Material(models.Model):
     transport_energy_kwh_per_kg = models.FloatField(default=0)
     transport_land_m2_per_kg = models.FloatField(default=0)
     transport_cost_per_kg = models.FloatField(default=0)
-    transport_source = models.TextField(blank=True, help_text="Source citation for transport phase data")
+    transport_source_url = models.URLField(blank=True, help_text="Link to transport data source")
+    transport_source_name = models.CharField(max_length=255, blank=True, help_text="Name of the source")
+    transport_source_note = models.TextField(blank=True, help_text="Notes about the transport source or calculation")
     
     # END OF LIFE PHASE - per kilogram of material
     end_of_life_co2e_kg_per_kg = models.FloatField(
@@ -67,7 +71,9 @@ class Material(models.Model):
     end_of_life_energy_kwh_per_kg = models.FloatField(default=0)
     end_of_life_land_m2_per_kg = models.FloatField(default=0)
     end_of_life_cost_per_kg = models.FloatField(default=0)
-    end_of_life_source = models.TextField(blank=True, help_text="Source citation for end of life phase data")
+    end_of_life_source_url = models.URLField(blank=True, help_text="Link to end of life data source")
+    end_of_life_source_name = models.CharField(max_length=255, blank=True, help_text="Name of the source")
+    end_of_life_source_note = models.TextField(blank=True, help_text="Notes about the end of life source or calculation")
 
     methodology = models.TextField(blank=True, help_text="General methodology notes")
     
@@ -99,7 +105,9 @@ class Product(models.Model):
     uses_per_year = models.FloatField(default=1, help_text="Average uses per year (e.g., 1 for yearly, 365 for daily use)")
     average_lifespan_uses = models.FloatField(default=1, help_text="Average number of uses the product lasts before needing replacement (e.g., 1 for single-use, 500 for durable)")
     
-    use_phase_source = models.TextField(blank=True, help_text="Source citation for use phase data")
+    use_phase_source_url = models.URLField(blank=True, help_text="Link to use phase data source")
+    use_phase_source_name = models.CharField(max_length=255, blank=True, help_text="Name of the source")
+    use_phase_source_note = models.TextField(blank=True, help_text="Notes about the use phase source or calculation")
 
     # USE PHASE IMPACTS - impacts that occur during use (per use)
     # For example: washing a napkin uses water and energy
@@ -174,7 +182,11 @@ class Product(models.Model):
                     'item': "Use Phase (Annual)",
                     'value': annual_use,
                     'calculation': "Annual direct use",
-                    'source': self.use_phase_source,
+                    'source': {
+                        'url': self.use_phase_source_url,
+                        'name': self.use_phase_source_name,
+                        'note': self.use_phase_source_note
+                    },
                     'sub_sources': phases['use'][metric]['sources']
                 })
 
@@ -214,8 +226,16 @@ class Product(models.Model):
         for component in self.components.all():
             w = component.get_weight_kg()
             for phase in ['production', 'transport', 'end_of_life']:
-                source_field = f"{phase}_source"
-                source_text = getattr(component.material, source_field, "")
+                # Construct rich source object from split fields
+                source_url = getattr(component.material, f"{phase}_source_url", "")
+                source_name = getattr(component.material, f"{phase}_source_name", "")
+                source_note = getattr(component.material, f"{phase}_source_note", "")
+                
+                source_data = {
+                    'url': source_url,
+                    'name': source_name,
+                    'note': source_note
+                }
                 
                 for metric, suffix in metrics_map.items():
                     attr_name = f"{phase}_{suffix}_per_kg"
@@ -228,12 +248,16 @@ class Product(models.Model):
                             'item': component.material.name,
                             'value': impact,
                             'calculation': f"{w:.3g} kg * {factor:.3g}",
-                            'source': source_text
+                            'source': source_data
                         })
 
         # Use Phase
         # Add use phase impacts (these are per use, so multiply by uses_per_year for annualized impact)
-        use_source = self.use_phase_source
+        use_source_data = {
+            'url': self.use_phase_source_url,
+            'name': self.use_phase_source_name,
+            'note': self.use_phase_source_note
+        }
         
         product_metrics_map = {
             'greenhouse_gas_kg': 'co2e_kg',
@@ -258,7 +282,7 @@ class Product(models.Model):
                     'item': "Direct Use (Annual)",
                     'value': total,
                     'calculation': f"{per_use:.3g} / use * {self.uses_per_year} uses/yr",
-                    'source': use_source
+                    'source': use_source_data
                 })
         
         return phases

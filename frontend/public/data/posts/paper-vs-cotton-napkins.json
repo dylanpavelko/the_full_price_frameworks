@@ -38,19 +38,31 @@
                       "item": "Paper",
                       "value": 0.0045000000000000005,
                       "calculation": "0.003 kg * 1.5",
-                      "source": ""
+                      "source": {
+                        "url": "",
+                        "name": "",
+                        "note": ""
+                      }
                     },
                     {
                       "item": "Paper",
                       "value": 0.00030000000000000003,
                       "calculation": "0.003 kg * 0.1",
-                      "source": ""
+                      "source": {
+                        "url": "",
+                        "name": "",
+                        "note": ""
+                      }
                     },
                     {
                       "item": "Paper",
                       "value": 6e-05,
                       "calculation": "0.003 kg * 0.02",
-                      "source": ""
+                      "source": {
+                        "url": "",
+                        "name": "",
+                        "note": ""
+                      }
                     }
                   ]
                 }
@@ -69,19 +81,31 @@
                       "item": "Paper",
                       "value": 9.0,
                       "calculation": "0.003 kg * 3e+03",
-                      "source": ""
+                      "source": {
+                        "url": "",
+                        "name": "",
+                        "note": ""
+                      }
                     },
                     {
                       "item": "Paper",
                       "value": 0.015,
                       "calculation": "0.003 kg * 5",
-                      "source": ""
+                      "source": {
+                        "url": "",
+                        "name": "",
+                        "note": ""
+                      }
                     },
                     {
                       "item": "Paper",
                       "value": 0.03,
                       "calculation": "0.003 kg * 10",
-                      "source": ""
+                      "source": {
+                        "url": "",
+                        "name": "",
+                        "note": ""
+                      }
                     }
                   ]
                 }
@@ -100,19 +124,31 @@
                       "item": "Paper",
                       "value": 0.024,
                       "calculation": "0.003 kg * 8",
-                      "source": ""
+                      "source": {
+                        "url": "",
+                        "name": "",
+                        "note": ""
+                      }
                     },
                     {
                       "item": "Paper",
                       "value": 0.0006000000000000001,
                       "calculation": "0.003 kg * 0.2",
-                      "source": ""
+                      "source": {
+                        "url": "",
+                        "name": "",
+                        "note": ""
+                      }
                     },
                     {
                       "item": "Paper",
                       "value": 0.00030000000000000003,
                       "calculation": "0.003 kg * 0.1",
-                      "source": ""
+                      "source": {
+                        "url": "",
+                        "name": "",
+                        "note": ""
+                      }
                     }
                   ]
                 }
@@ -131,7 +167,11 @@
                       "item": "Paper",
                       "value": 0.0036,
                       "calculation": "0.003 kg * 1.2",
-                      "source": ""
+                      "source": {
+                        "url": "",
+                        "name": "",
+                        "note": ""
+                      }
                     }
                   ]
                 }
@@ -150,19 +190,31 @@
                       "item": "Paper",
                       "value": 0.0024000000000000002,
                       "calculation": "0.003 kg * 0.8",
-                      "source": ""
+                      "source": {
+                        "url": "",
+                        "name": "",
+                        "note": ""
+                      }
                     },
                     {
                       "item": "Paper",
                       "value": 0.00015000000000000001,
                       "calculation": "0.003 kg * 0.05",
-                      "source": ""
+                      "source": {
+                        "url": "",
+                        "name": "",
+                        "note": ""
+                      }
                     },
                     {
                       "item": "Paper",
                       "value": 6e-05,
                       "calculation": "0.003 kg * 0.02",
-                      "source": ""
+                      "source": {
+                        "url": "",
+                        "name": "",
+                        "note": ""
+                      }
                     }
                   ]
                 }
@@ -178,7 +230,11 @@
                     "item": "Paper",
                     "value": 0.0045000000000000005,
                     "calculation": "0.003 kg * 1.5",
-                    "source": ""
+                    "source": {
+                      "url": "",
+                      "name": "",
+                      "note": ""
+                    }
                   }
                 ]
               },
@@ -189,7 +245,11 @@
                     "item": "Paper",
                     "value": 9.0,
                     "calculation": "0.003 kg * 3e+03",
-                    "source": ""
+                    "source": {
+                      "url": "",
+                      "name": "",
+                      "note": ""
+                    }
                   }
                 ]
               },
@@ -200,7 +260,11 @@
                     "item": "Paper",
                     "value": 0.024,
                     "calculation": "0.003 kg * 8",
-                    "source": ""
+                    "source": {
+                      "url": "",
+                      "name": "",
+                      "note": ""
+                    }
                   }
                 ]
               },
@@ -211,7 +275,11 @@
                     "item": "Paper",
                     "value": 0.0036,
                     "calculation": "0.003 kg * 1.2",
-                    "source": ""
+                    "source": {
+                      "url": "",
+                      "name": "",
+                      "note": ""
+                    }
                   }
                 ]
               },
@@ -222,7 +290,11 @@
                     "item": "Paper",
                     "value": 0.0024000000000000002,
                     "calculation": "0.003 kg * 0.8",
-                    "source": ""
+                    "source": {
+                      "url": "",
+                      "name": "",
+                      "note": ""
+                    }
                   }
                 ]
               }
@@ -235,7 +307,11 @@
                     "item": "Paper",
                     "value": 0.00030000000000000003,
                     "calculation": "0.003 kg * 0.1",
-                    "source": ""
+                    "source": {
+                      "url": "",
+                      "name": "",
+                      "note": ""
+                    }
                   }
                 ]
               },
@@ -246,7 +322,11 @@
                     "item": "Paper",
                     "value": 0.015,
                     "calculation": "0.003 kg * 5",
-                    "source": ""
+                    "source": {
+                      "url": "",
+                      "name": "",
+                      "note": ""
+                    }
                   }
                 ]
               },
@@ -257,7 +337,11 @@
                     "item": "Paper",
                     "value": 0.0006000000000000001,
                     "calculation": "0.003 kg * 0.2",
-                    "source": ""
+                    "source": {
+                      "url": "",
+                      "name": "",
+                      "note": ""
+                    }
                   }
                 ]
               },
@@ -272,7 +356,11 @@
                     "item": "Paper",
                     "value": 0.00015000000000000001,
                     "calculation": "0.003 kg * 0.05",
-                    "source": ""
+                    "source": {
+                      "url": "",
+                      "name": "",
+                      "note": ""
+                    }
                   }
                 ]
               }
@@ -285,7 +373,11 @@
                     "item": "Paper",
                     "value": 6e-05,
                     "calculation": "0.003 kg * 0.02",
-                    "source": ""
+                    "source": {
+                      "url": "",
+                      "name": "",
+                      "note": ""
+                    }
                   }
                 ]
               },
@@ -296,7 +388,11 @@
                     "item": "Paper",
                     "value": 0.03,
                     "calculation": "0.003 kg * 10",
-                    "source": ""
+                    "source": {
+                      "url": "",
+                      "name": "",
+                      "note": ""
+                    }
                   }
                 ]
               },
@@ -307,7 +403,11 @@
                     "item": "Paper",
                     "value": 0.00030000000000000003,
                     "calculation": "0.003 kg * 0.1",
-                    "source": ""
+                    "source": {
+                      "url": "",
+                      "name": "",
+                      "note": ""
+                    }
                   }
                 ]
               },
@@ -322,7 +422,11 @@
                     "item": "Paper",
                     "value": 6e-05,
                     "calculation": "0.003 kg * 0.02",
-                    "source": ""
+                    "source": {
+                      "url": "",
+                      "name": "",
+                      "note": ""
+                    }
                   }
                 ]
               }
@@ -394,19 +498,31 @@
                       "item": "Cotton",
                       "value": 0.07500000000000001,
                       "calculation": "0.025 kg * 3",
-                      "source": ""
+                      "source": {
+                        "url": "",
+                        "name": "",
+                        "note": ""
+                      }
                     },
                     {
                       "item": "Cotton",
                       "value": 0.00375,
                       "calculation": "0.025 kg * 0.15",
-                      "source": ""
+                      "source": {
+                        "url": "",
+                        "name": "",
+                        "note": ""
+                      }
                     },
                     {
                       "item": "Cotton",
                       "value": 0.0012500000000000002,
                       "calculation": "0.025 kg * 0.05",
-                      "source": ""
+                      "source": {
+                        "url": "http://www.google.com",
+                        "name": "google",
+                        "note": "just a test for end of life"
+                      }
                     }
                   ]
                 },
@@ -414,13 +530,21 @@
                   "item": "Use Phase (Annual)",
                   "value": 3.2849999999999997,
                   "calculation": "Annual direct use",
-                  "source": "",
+                  "source": {
+                    "url": "",
+                    "name": "",
+                    "note": ""
+                  },
                   "sub_sources": [
                     {
                       "item": "Direct Use (Annual)",
                       "value": 3.2849999999999997,
                       "calculation": "0.009 / use * 365.0 uses/yr",
-                      "source": ""
+                      "source": {
+                        "url": "",
+                        "name": "",
+                        "note": ""
+                      }
                     }
                   ]
                 }
@@ -439,19 +563,31 @@
                       "item": "Cotton",
                       "value": 300.0,
                       "calculation": "0.025 kg * 1.2e+04",
-                      "source": ""
+                      "source": {
+                        "url": "",
+                        "name": "",
+                        "note": ""
+                      }
                     },
                     {
                       "item": "Cotton",
                       "value": 0.125,
                       "calculation": "0.025 kg * 5",
-                      "source": ""
+                      "source": {
+                        "url": "",
+                        "name": "",
+                        "note": ""
+                      }
                     },
                     {
                       "item": "Cotton",
                       "value": 0.025,
                       "calculation": "0.025 kg * 1",
-                      "source": ""
+                      "source": {
+                        "url": "http://www.google.com",
+                        "name": "google",
+                        "note": "just a test for end of life"
+                      }
                     }
                   ]
                 },
@@ -459,13 +595,21 @@
                   "item": "Use Phase (Annual)",
                   "value": 386.90000000000003,
                   "calculation": "Annual direct use",
-                  "source": "",
+                  "source": {
+                    "url": "",
+                    "name": "",
+                    "note": ""
+                  },
                   "sub_sources": [
                     {
                       "item": "Direct Use (Annual)",
                       "value": 386.90000000000003,
                       "calculation": "1.06 / use * 365.0 uses/yr",
-                      "source": ""
+                      "source": {
+                        "url": "",
+                        "name": "",
+                        "note": ""
+                      }
                     }
                   ]
                 }
@@ -484,19 +628,31 @@
                       "item": "Cotton",
                       "value": 0.375,
                       "calculation": "0.025 kg * 15",
-                      "source": ""
+                      "source": {
+                        "url": "",
+                        "name": "",
+                        "note": ""
+                      }
                     },
                     {
                       "item": "Cotton",
                       "value": 0.0125,
                       "calculation": "0.025 kg * 0.5",
-                      "source": ""
+                      "source": {
+                        "url": "",
+                        "name": "",
+                        "note": ""
+                      }
                     },
                     {
                       "item": "Cotton",
                       "value": 0.0012500000000000002,
                       "calculation": "0.025 kg * 0.05",
-                      "source": ""
+                      "source": {
+                        "url": "http://www.google.com",
+                        "name": "google",
+                        "note": "just a test for end of life"
+                      }
                     }
                   ]
                 },
@@ -504,13 +660,21 @@
                   "item": "Use Phase (Annual)",
                   "value": 8.76,
                   "calculation": "Annual direct use",
-                  "source": "",
+                  "source": {
+                    "url": "",
+                    "name": "",
+                    "note": ""
+                  },
                   "sub_sources": [
                     {
                       "item": "Direct Use (Annual)",
                       "value": 8.76,
                       "calculation": "0.024 / use * 365.0 uses/yr",
-                      "source": ""
+                      "source": {
+                        "url": "",
+                        "name": "",
+                        "note": ""
+                      }
                     }
                   ]
                 }
@@ -529,13 +693,21 @@
                       "item": "Cotton",
                       "value": 0.0625,
                       "calculation": "0.025 kg * 2.5",
-                      "source": ""
+                      "source": {
+                        "url": "",
+                        "name": "",
+                        "note": ""
+                      }
                     },
                     {
                       "item": "Cotton",
                       "value": 0.00025,
                       "calculation": "0.025 kg * 0.01",
-                      "source": ""
+                      "source": {
+                        "url": "http://www.google.com",
+                        "name": "google",
+                        "note": "just a test for end of life"
+                      }
                     }
                   ]
                 }
@@ -554,19 +726,31 @@
                       "item": "Cotton",
                       "value": 0.043750000000000004,
                       "calculation": "0.025 kg * 1.75",
-                      "source": ""
+                      "source": {
+                        "url": "",
+                        "name": "",
+                        "note": ""
+                      }
                     },
                     {
                       "item": "Cotton",
                       "value": 0.0025000000000000005,
                       "calculation": "0.025 kg * 0.1",
-                      "source": ""
+                      "source": {
+                        "url": "",
+                        "name": "",
+                        "note": ""
+                      }
                     },
                     {
                       "item": "Cotton",
                       "value": 0.0005,
                       "calculation": "0.025 kg * 0.02",
-                      "source": ""
+                      "source": {
+                        "url": "http://www.google.com",
+                        "name": "google",
+                        "note": "just a test for end of life"
+                      }
                     }
                   ]
                 },
@@ -574,13 +758,21 @@
                   "item": "Use Phase (Annual)",
                   "value": 2.19,
                   "calculation": "Annual direct use",
-                  "source": "",
+                  "source": {
+                    "url": "",
+                    "name": "",
+                    "note": ""
+                  },
                   "sub_sources": [
                     {
                       "item": "Direct Use (Annual)",
                       "value": 2.19,
                       "calculation": "0.006 / use * 365.0 uses/yr",
-                      "source": ""
+                      "source": {
+                        "url": "",
+                        "name": "",
+                        "note": ""
+                      }
                     }
                   ]
                 }
@@ -596,7 +788,11 @@
                     "item": "Cotton",
                     "value": 0.07500000000000001,
                     "calculation": "0.025 kg * 3",
-                    "source": ""
+                    "source": {
+                      "url": "",
+                      "name": "",
+                      "note": ""
+                    }
                   }
                 ]
               },
@@ -607,7 +803,11 @@
                     "item": "Cotton",
                     "value": 300.0,
                     "calculation": "0.025 kg * 1.2e+04",
-                    "source": ""
+                    "source": {
+                      "url": "",
+                      "name": "",
+                      "note": ""
+                    }
                   }
                 ]
               },
@@ -618,7 +818,11 @@
                     "item": "Cotton",
                     "value": 0.375,
                     "calculation": "0.025 kg * 15",
-                    "source": ""
+                    "source": {
+                      "url": "",
+                      "name": "",
+                      "note": ""
+                    }
                   }
                 ]
               },
@@ -629,7 +833,11 @@
                     "item": "Cotton",
                     "value": 0.0625,
                     "calculation": "0.025 kg * 2.5",
-                    "source": ""
+                    "source": {
+                      "url": "",
+                      "name": "",
+                      "note": ""
+                    }
                   }
                 ]
               },
@@ -640,7 +848,11 @@
                     "item": "Cotton",
                     "value": 0.043750000000000004,
                     "calculation": "0.025 kg * 1.75",
-                    "source": ""
+                    "source": {
+                      "url": "",
+                      "name": "",
+                      "note": ""
+                    }
                   }
                 ]
               }
@@ -653,7 +865,11 @@
                     "item": "Cotton",
                     "value": 0.00375,
                     "calculation": "0.025 kg * 0.15",
-                    "source": ""
+                    "source": {
+                      "url": "",
+                      "name": "",
+                      "note": ""
+                    }
                   }
                 ]
               },
@@ -664,7 +880,11 @@
                     "item": "Cotton",
                     "value": 0.125,
                     "calculation": "0.025 kg * 5",
-                    "source": ""
+                    "source": {
+                      "url": "",
+                      "name": "",
+                      "note": ""
+                    }
                   }
                 ]
               },
@@ -675,7 +895,11 @@
                     "item": "Cotton",
                     "value": 0.0125,
                     "calculation": "0.025 kg * 0.5",
-                    "source": ""
+                    "source": {
+                      "url": "",
+                      "name": "",
+                      "note": ""
+                    }
                   }
                 ]
               },
@@ -690,7 +914,11 @@
                     "item": "Cotton",
                     "value": 0.0025000000000000005,
                     "calculation": "0.025 kg * 0.1",
-                    "source": ""
+                    "source": {
+                      "url": "",
+                      "name": "",
+                      "note": ""
+                    }
                   }
                 ]
               }
@@ -703,7 +931,11 @@
                     "item": "Cotton",
                     "value": 0.0012500000000000002,
                     "calculation": "0.025 kg * 0.05",
-                    "source": ""
+                    "source": {
+                      "url": "http://www.google.com",
+                      "name": "google",
+                      "note": "just a test for end of life"
+                    }
                   }
                 ]
               },
@@ -714,7 +946,11 @@
                     "item": "Cotton",
                     "value": 0.025,
                     "calculation": "0.025 kg * 1",
-                    "source": ""
+                    "source": {
+                      "url": "http://www.google.com",
+                      "name": "google",
+                      "note": "just a test for end of life"
+                    }
                   }
                 ]
               },
@@ -725,7 +961,11 @@
                     "item": "Cotton",
                     "value": 0.0012500000000000002,
                     "calculation": "0.025 kg * 0.05",
-                    "source": ""
+                    "source": {
+                      "url": "http://www.google.com",
+                      "name": "google",
+                      "note": "just a test for end of life"
+                    }
                   }
                 ]
               },
@@ -736,7 +976,11 @@
                     "item": "Cotton",
                     "value": 0.00025,
                     "calculation": "0.025 kg * 0.01",
-                    "source": ""
+                    "source": {
+                      "url": "http://www.google.com",
+                      "name": "google",
+                      "note": "just a test for end of life"
+                    }
                   }
                 ]
               },
@@ -747,7 +991,11 @@
                     "item": "Cotton",
                     "value": 0.0005,
                     "calculation": "0.025 kg * 0.02",
-                    "source": ""
+                    "source": {
+                      "url": "http://www.google.com",
+                      "name": "google",
+                      "note": "just a test for end of life"
+                    }
                   }
                 ]
               }
@@ -760,7 +1008,11 @@
                     "item": "Direct Use (Annual)",
                     "value": 3.2849999999999997,
                     "calculation": "0.009 / use * 365.0 uses/yr",
-                    "source": ""
+                    "source": {
+                      "url": "",
+                      "name": "",
+                      "note": ""
+                    }
                   }
                 ]
               },
@@ -771,7 +1023,11 @@
                     "item": "Direct Use (Annual)",
                     "value": 386.90000000000003,
                     "calculation": "1.06 / use * 365.0 uses/yr",
-                    "source": ""
+                    "source": {
+                      "url": "",
+                      "name": "",
+                      "note": ""
+                    }
                   }
                 ]
               },
@@ -782,7 +1038,11 @@
                     "item": "Direct Use (Annual)",
                     "value": 8.76,
                     "calculation": "0.024 / use * 365.0 uses/yr",
-                    "source": ""
+                    "source": {
+                      "url": "",
+                      "name": "",
+                      "note": ""
+                    }
                   }
                 ]
               },
@@ -797,7 +1057,11 @@
                     "item": "Direct Use (Annual)",
                     "value": 2.19,
                     "calculation": "0.006 / use * 365.0 uses/yr",
-                    "source": ""
+                    "source": {
+                      "url": "",
+                      "name": "",
+                      "note": ""
+                    }
                   }
                 ]
               }
@@ -828,5 +1092,5 @@
       ]
     }
   },
-  "export_timestamp": "2026-02-03T06:01:58.915306"
+  "export_timestamp": "2026-02-03T07:38:21.205198"
 }
