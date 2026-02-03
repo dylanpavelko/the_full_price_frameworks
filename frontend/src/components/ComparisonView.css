@@ -452,3 +452,41 @@ padding: 0;
   background-color: var(--color-primary-light);
   color: #fff;
 }
+
+/* Interactive Values */
+.metric-link {
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+
+.metric-link:hover {
+  text-decoration-thickness: 2px;
+}
+
+.info-icon {
+  font-size: 0.7em;
+  vertical-align: super;
+  margin-left: 2px;
+  color: var(--color-primary-light);
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+.info-icon:hover {
+  opacity: 1;
+}
+
+.clickable-value::after {
+  content: 'ℹ';
+  font-size: 0.7em;
+  vertical-align: super;
+  margin-left: 4px;
+  color: var(--color-primary-light);
+  opacity: 0.7;
+}
+
+.clickable-value:hover::after {
+  opacity: 1;
+}

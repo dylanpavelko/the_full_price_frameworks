@@ -1,7 +1,11 @@
+// Helper to handle both simple numbers and rich impact objects
+export const getVal = (v) => (v && typeof v === 'object' && 'value' in v) ? v.value : (v || 0);
+
 // Imperial formatters
 export function formatGreenhouseGasImperial(value) {
+  const val = getVal(value);
   // 1 kg CO2e ≈ 2.20462 lbs CO2e
-  const lbs = value * 2.20462;
+  const lbs = val * 2.20462;
   if (lbs >= 2000) {
     return `${(lbs / 2000).toFixed(2)} US tons CO₂e`;
   }
@@ -9,8 +13,9 @@ export function formatGreenhouseGasImperial(value) {
 }
 
 export function formatWaterImperial(value) {
+  const val = getVal(value);
   // 1 liter ≈ 0.264172 gallons
-  const gallons = value * 0.264172;
+  const gallons = val * 0.264172;
   if (gallons >= 1000) {
     return `${(gallons / 1000).toFixed(2)} kgal`;
   }
@@ -18,8 +23,9 @@ export function formatWaterImperial(value) {
 }
 
 export function formatEnergyImperial(value) {
+  const val = getVal(value);
   // 1 kWh ≈ 3412.14 BTU
-  const btu = value * 3412.14;
+  const btu = val * 3412.14;
   if (btu >= 1000000) {
     return `${(btu / 1000000).toFixed(2)} MMBTU`;
   }
@@ -27,11 +33,12 @@ export function formatEnergyImperial(value) {
 }
 
 export function formatLandImperial(value) {
+  const val = getVal(value);
   // 1 m² ≈ 10.7639 ft², 1 acre = 4046.86 m²
-  if (value >= 4046.86) {
-    return `${(value / 4046.86).toFixed(2)} acres`;
+  if (val >= 4046.86) {
+    return `${(val / 4046.86).toFixed(2)} acres`;
   }
-  return `${(value * 10.7639).toFixed(2)} ft²`;
+  return `${(val * 10.7639).toFixed(2)} ft²`;
 }
 /**
  * Utility functions for formatting impact data for display.
@@ -46,12 +53,13 @@ export function formatLandImperial(value) {
  * @returns {string} Formatted currency string
  */
 export function formatCurrency(value) {
+  const val = getVal(value);
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  }).format(value);
+  }).format(val);
 }
 
 /**
@@ -60,10 +68,11 @@ export function formatCurrency(value) {
  * @returns {string} Formatted string with appropriate unit
  */
 export function formatGreenhouseGas(value) {
-  if (value >= 1000) {
-    return `${(value / 1000).toFixed(2)} metric tons CO₂e`;
+  const val = getVal(value);
+  if (val >= 1000) {
+    return `${(val / 1000).toFixed(2)} metric tons CO₂e`;
   }
-  return `${value.toFixed(2)} kg CO₂e`;
+  return `${val.toFixed(2)} kg CO₂e`;
 }
 
 /**
@@ -72,13 +81,14 @@ export function formatGreenhouseGas(value) {
  * @returns {string} Formatted string with appropriate unit
  */
 export function formatWater(value) {
-  if (value == null || isNaN(value)) return '0 liters';
-  if (value >= 1000000) {
-    return (value / 1000000).toFixed(2).replace(/\.00$/, '') + ' ML';
-  } else if (value >= 1000) {
-    return (value / 1000).toFixed(2).replace(/\.00$/, '') + ' m³';
+  const val = getVal(value);
+  if (val == null || isNaN(val)) return '0 liters';
+  if (val >= 1000000) {
+    return (val / 1000000).toFixed(2).replace(/\.00$/, '') + ' ML';
+  } else if (val >= 1000) {
+    return (val / 1000).toFixed(2).replace(/\.00$/, '') + ' m³';
   } else {
-    return value + ' liters';
+    return val + ' liters';
   }
 }
 
@@ -88,7 +98,8 @@ export function formatWater(value) {
  * @returns {string} Formatted string with appropriate unit
  */
 export function formatEnergy(value) {
-  return `${value.toFixed(2)} kWh`;
+  const val = getVal(value);
+  return `${val.toFixed(2)} kWh`;
 }
 
 /**
@@ -97,10 +108,11 @@ export function formatEnergy(value) {
  * @returns {string} Formatted string with appropriate unit
  */
 export function formatLand(value) {
-  if (value >= 10000) {
-    return `${(value / 10000).toFixed(2)} hectares`;
+  const val = getVal(value);
+  if (val >= 10000) {
+    return `${(val / 10000).toFixed(2)} hectares`;
   }
-  return `${value.toFixed(2)} m²`;
+  return `${val.toFixed(2)} m²`;
 }
 
 /**

@@ -19,9 +19,11 @@ import {
   formatLandImperial,
 } from '../utils/formatting.js';
 import { compareProducts, getItemsPerYear, getAnnualImpactByPhase } from '../utils/comparison.js';
+import { CalculationModal } from './CalculationModal';
 import './ComparisonView.css';
 
 export function ComparisonView({ product1, product2 }) {
+  const [modalData, setModalData] = useState(null);
   // Toggle between grouping by phase or by metric
   const [groupByPhase, setGroupByPhase] = useState(false);
   // Toggle between metric and imperial units
@@ -235,23 +237,43 @@ export function ComparisonView({ product1, product2 }) {
     return acc;
   }, { product1: 0, product2: 0 });
 
-  const renderMetricRow = (label, comparison, formatFn) => {
-    const p1Value = product1.impacts[Object.keys(comparison)[3].split('Impact')[0]];
-    const p2Value = product2.impacts[Object.keys(comparison)[3].split('Impact')[0]];
+  const renderMetricRow = (label, comparison, formatFn, metricKey) => {
+    const p1Data = metricKey ? product1.impacts[metricKey] : null;
+    const p2Data = metricKey ? product2.impacts[metricKey] : null;
     
+    const handleClick = (data, name) => {
+      if (data && typeof data === 'object' && 'sources' in data) {
+        setModalData({ data, title: `${name} - ${label}`, unit: label });
+      }
+    };
+
     return (
       <div className="comparison__metric-row" key={label}>
         <div className="comparison__metric-label">{label}</div>
-        <div className={`comparison__metric-value ${
-          comparison.winner === product1.name ? 'winner' : 'loser'
-        }`}>
-          {formatFn(comparison.product1Impact)}
+        <div className={`comparison__metric-value ${comparison.winner === product1.name ? 'winner' : 'loser'}`}>
+          {p1Data && typeof p1Data === 'object' && 'sources' in p1Data ? (
+            <>
+              <span className="metric-link" onClick={() => handleClick(p1Data, product1.name)} title="Click for breakdown">
+                {formatFn(comparison.product1Impact)}
+              </span>
+              <span className="info-icon" onClick={() => handleClick(p1Data, product1.name)} title="Click for breakdown">ℹ</span>
+            </>
+          ) : (
+            formatFn(comparison.product1Impact)
+          )}
           {comparison.winner === product1.name && <span className="winner-badge">✓</span>}
         </div>
-        <div className={`comparison__metric-value ${
-          comparison.winner === product2.name ? 'winner' : 'loser'
-        }`}>
-          {formatFn(comparison.product2Impact)}
+        <div className={`comparison__metric-value ${comparison.winner === product2.name ? 'winner' : 'loser'}`}>
+          {p2Data && typeof p2Data === 'object' && 'sources' in p2Data ? (
+             <>
+               <span className="metric-link" onClick={() => handleClick(p2Data, product2.name)} title="Click for breakdown">
+                 {formatFn(comparison.product2Impact)}
+               </span>
+               <span className="info-icon" onClick={() => handleClick(p2Data, product2.name)} title="Click for breakdown">ℹ</span>
+             </>
+          ) : (
+             formatFn(comparison.product2Impact)
+          )}
           {comparison.winner === product2.name && <span className="winner-badge">✓</span>}
         </div>
       </div>
@@ -266,6 +288,15 @@ export function ComparisonView({ product1, product2 }) {
       { key: 'use', label: 'Use & Care' },
       { key: 'end_of_life', label: 'End of Life' },
     ];
+    
+    const getVal = (v) => (typeof v === 'object' && v !== null && 'value' in v) ? v.value : (v || 0);
+    
+    const handlePhaseClick = (data, pName, phaseLabel) => {
+        if (data && typeof data === 'object' && 'sources' in data) {
+             setModalData({ data, title: `${pName} - ${phaseLabel} (${label})`, unit: label });
+        }
+    };
+
     return (
       <div className="comparison__phase-table" key={label}>
         <div className="comparison__phase-table-header-row">
@@ -273,29 +304,46 @@ export function ComparisonView({ product1, product2 }) {
           <div className="comparison__phase-table-product">{product1.name}</div>
           <div className="comparison__phase-table-product">{product2.name}</div>
         </div>
-        {phases.map(phase => (
+        {phases.map(phase => {
+          const p1Phase = breakdown.product1?.[phase.key];
+          const p2Phase = breakdown.product2?.[phase.key];
+          return (
           <div className="comparison__phase-table-row" key={phase.key}>
             <div className="comparison__phase-table-phase">{phase.label}</div>
             <div className="comparison__phase-table-value">
-              {breakdown.product1 && breakdown.product1[phase.key] != null
-                ? formatFn(breakdown.product1[phase.key])
-                : '0'}
+              {p1Phase && typeof p1Phase === 'object' && 'sources' in p1Phase ? (
+                <>
+                    <span className="metric-link" onClick={() => handlePhaseClick(p1Phase, product1.name, phase.label)} title="Click for breakdown">
+                        {formatFn(getVal(p1Phase))}
+                    </span>
+                    <span className="info-icon" onClick={() => handlePhaseClick(p1Phase, product1.name, phase.label)} title="Click for breakdown">ℹ</span>
+                </>
+              ) : (
+                formatFn(getVal(p1Phase))
+              )}
             </div>
             <div className="comparison__phase-table-value">
-              {breakdown.product2 && breakdown.product2[phase.key] != null
-                ? formatFn(breakdown.product2[phase.key])
-                : '0'}
+               {p2Phase && typeof p2Phase === 'object' && 'sources' in p2Phase ? (
+                <>
+                    <span className="metric-link" onClick={() => handlePhaseClick(p2Phase, product2.name, phase.label)} title="Click for breakdown">
+                        {formatFn(getVal(p2Phase))}
+                    </span>
+                    <span className="info-icon" onClick={() => handlePhaseClick(p2Phase, product2.name, phase.label)} title="Click for breakdown">ℹ</span>
+                </>
+              ) : (
+                formatFn(getVal(p2Phase))
+              )}
             </div>
           </div>
-        ))}
+        )})}
         {/* Total row at the bottom */}
         <div className="comparison__phase-table-row" key="sum">
           <div className="comparison__phase-table-phase"><strong>Total</strong></div>
           <div className="comparison__phase-table-value">
-            {formatFn(product1.impacts[sumKey])}
+            {formatFn(getVal(product1.impacts[sumKey]))}
           </div>
           <div className="comparison__phase-table-value">
-            {formatFn(product2.impacts[sumKey])}
+            {formatFn(getVal(product2.impacts[sumKey]))}
           </div>
         </div>
       </div>
@@ -398,11 +446,11 @@ export function ComparisonView({ product1, product2 }) {
           </div>
         </div>
         {/* Annual Cost (normalized by usage) */}
-        {renderMetricRow('Annual Cost', comparisons.cost, formatters.cost)}
-        {renderMetricRow('CO₂e Emissions', comparisons.ghg, formatters.ghg)}
-        {renderMetricRow('Water Usage', comparisons.water, formatters.water)}
-        {renderMetricRow('Energy', comparisons.energy, formatters.energy)}
-        {renderMetricRow('Land Use', comparisons.land, formatters.land)}
+        {renderMetricRow('Annual Cost', comparisons.cost, formatters.cost, 'cost_usd')}
+        {renderMetricRow('CO₂e Emissions', comparisons.ghg, formatters.ghg, 'greenhouse_gas_kg')}
+        {renderMetricRow('Water Usage', comparisons.water, formatters.water, 'water_liters')}
+        {renderMetricRow('Energy', comparisons.energy, formatters.energy, 'energy_kwh')}
+        {renderMetricRow('Land Use', comparisons.land, formatters.land, 'land_m2')}
       </div>
 
       {/* Unit toggle below summary table */}
@@ -478,6 +526,14 @@ export function ComparisonView({ product1, product2 }) {
           row shows how many items you'd need to purchase annually based on your usage patterns.
         </p>
       </div>
+
+      <CalculationModal 
+        isOpen={!!modalData}
+        onClose={() => setModalData(null)}
+        data={modalData?.data}
+        title={modalData?.title}
+        unit={modalData?.unit}
+      />
     </div>
   );
 }

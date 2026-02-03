@@ -45,6 +45,7 @@ class Material(models.Model):
         default=0,
         help_text="Material cost per kg"
     )
+    production_source = models.TextField(blank=True, help_text="Source citation for production phase data")
     
     # TRANSPORT PHASE - per kilogram of material
     transport_co2e_kg_per_kg = models.FloatField(
@@ -55,6 +56,7 @@ class Material(models.Model):
     transport_energy_kwh_per_kg = models.FloatField(default=0)
     transport_land_m2_per_kg = models.FloatField(default=0)
     transport_cost_per_kg = models.FloatField(default=0)
+    transport_source = models.TextField(blank=True, help_text="Source citation for transport phase data")
     
     # END OF LIFE PHASE - per kilogram of material
     end_of_life_co2e_kg_per_kg = models.FloatField(
@@ -65,6 +67,9 @@ class Material(models.Model):
     end_of_life_energy_kwh_per_kg = models.FloatField(default=0)
     end_of_life_land_m2_per_kg = models.FloatField(default=0)
     end_of_life_cost_per_kg = models.FloatField(default=0)
+    end_of_life_source = models.TextField(blank=True, help_text="Source citation for end of life phase data")
+
+    methodology = models.TextField(blank=True, help_text="General methodology notes")
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -94,6 +99,8 @@ class Product(models.Model):
     uses_per_year = models.FloatField(default=1, help_text="Average uses per year (e.g., 1 for yearly, 365 for daily use)")
     average_lifespan_uses = models.FloatField(default=1, help_text="Average number of uses the product lasts before needing replacement (e.g., 1 for single-use, 500 for durable)")
     
+    use_phase_source = models.TextField(blank=True, help_text="Source citation for use phase data")
+
     # USE PHASE IMPACTS - impacts that occur during use (per use)
     # For example: washing a napkin uses water and energy
     use_co2e_kg_per_use = models.FloatField(
@@ -125,44 +132,57 @@ class Product(models.Model):
 
     def get_total_impact(self):
         """
-        Calculate the total environmental impact of this product by summing
-        the impacts from all lifecycle phases (production, transport, end_of_life, use).
+        Calculate total lifecycle impact annualized over the product's lifespan.
+        
+        Formula: (Production + Transport + End of Life) / Lifespan Years  +  Annual Use Impact
+        
         Returns:
-            dict: Contains totals for greenhouse_gas_kg, water_liters, energy_kwh, land_m2, cost_usd
+            dict: Total annualized impact for each metric and sources.
         """
-        # Get the phase breakdown
         phases = self.get_impact_by_phase()
-        impact = {
-            'greenhouse_gas_kg': 0,
-            'water_liters': 0,
-            'energy_kwh': 0,
-            'land_m2': 0,
-            'cost_usd': 0,
-        }
-        # Sum each metric across all phases except cost_usd
-        for phase in phases.values():
-            for key in impact.keys():
-                if key != 'cost_usd':
-                    impact[key] += phase.get(key, 0)
-
-        # --- Annualized cost calculation ---
-
-
-        # --- Annualize all metrics using the same logic ---
+        impact = {}
+        
         uses_per_year = self.uses_per_year or 1
         lifespan_uses = self.average_lifespan_uses or 1
         metrics = ['greenhouse_gas_kg', 'water_liters', 'energy_kwh', 'land_m2', 'cost_usd']
+        
         for metric in metrics:
             # Upfront impact per item (sum of production, transport, end_of_life)
-            upfront = (
-                phases['production'][metric] +
-                phases['transport'][metric] +
-                phases['end_of_life'][metric]
-            )
+            production_val = phases['production'][metric]['value']
+            transport_val = phases['transport'][metric]['value']
+            eol_val = phases['end_of_life'][metric]['value']
+            
+            upfront = production_val + transport_val + eol_val
+            
             annualized_upfront = (upfront / lifespan_uses) * uses_per_year
-            annual_use = phases['use'][metric]
-            impact[metric] = annualized_upfront + annual_use
+            annual_use = phases['use'][metric]['value']
+            
+            total_val = annualized_upfront + annual_use
+            
+            sources = []
+            if annualized_upfront > 0:
+                sources.append({
+                    'item': "Manufacturing & EOL (Annualized)",
+                    'value': annualized_upfront,
+                    'calculation': f"({upfront:.3g} upfront / {lifespan_uses:.3g} uses) * {uses_per_year:.3g} uses/yr",
+                    'source': "Derived from component phases",
+                    'sub_sources': phases['production'][metric]['sources'] + phases['transport'][metric]['sources'] + phases['end_of_life'][metric]['sources']
+                })
+                
+            if annual_use > 0:
+                 sources.append({
+                    'item': "Use Phase (Annual)",
+                    'value': annual_use,
+                    'calculation': "Annual direct use",
+                    'source': self.use_phase_source,
+                    'sub_sources': phases['use'][metric]['sources']
+                })
 
+            impact[metric] = {
+                'value': total_val,
+                'sources': sources
+            }
+            
         return impact
 
     def get_impact_by_phase(self):
@@ -172,71 +192,74 @@ class Product(models.Model):
         
         Returns:
             dict: {
-                'production': {...impact dict...},
-                'transport': {...impact dict...},
-                'end_of_life': {...impact dict...},
-                'use': {...impact dict...}
+                'production': { 'metric': {'value': val, 'sources': [...]}, ... },
+                ...
             }
         """
-        phases = {
-            'production': {
-                'greenhouse_gas_kg': 0,
-                'water_liters': 0,
-                'energy_kwh': 0,
-                'land_m2': 0,
-                'cost_usd': 0,
-            },
-            'transport': {
-                'greenhouse_gas_kg': 0,
-                'water_liters': 0,
-                'energy_kwh': 0,
-                'land_m2': 0,
-                'cost_usd': 0,
-            },
-            'end_of_life': {
-                'greenhouse_gas_kg': 0,
-                'water_liters': 0,
-                'energy_kwh': 0,
-                'land_m2': 0,
-                'cost_usd': 0,
-            },
-            'use': {
-                'greenhouse_gas_kg': 0,
-                'water_liters': 0,
-                'energy_kwh': 0,
-                'land_m2': 0,
-                'cost_usd': 0,
-            }
+        metrics_map = {
+            'greenhouse_gas_kg': 'co2e_kg',
+            'water_liters': 'water_liters',
+            'energy_kwh': 'energy_kwh',
+            'land_m2': 'land_m2',
+            'cost_usd': 'cost',
         }
         
-        # Sum material impacts by phase
+        phases = {}
+        for phase_name in ['production', 'transport', 'end_of_life', 'use']:
+            phases[phase_name] = {}
+            for metric in metrics_map.keys():
+                phases[phase_name][metric] = {'value': 0.0, 'sources': []}
+
+        # Material Phases
         for component in self.components.all():
+            w = component.get_weight_kg()
             for phase in ['production', 'transport', 'end_of_life']:
-                if phase == 'production':
-                    phases[phase]['greenhouse_gas_kg'] += component.get_weight_kg() * component.material.production_co2e_kg_per_kg
-                    phases[phase]['water_liters'] += component.get_weight_kg() * component.material.production_water_liters_per_kg
-                    phases[phase]['energy_kwh'] += component.get_weight_kg() * component.material.production_energy_kwh_per_kg
-                    phases[phase]['land_m2'] += component.get_weight_kg() * component.material.production_land_m2_per_kg
-                    phases[phase]['cost_usd'] += component.get_weight_kg() * component.material.production_cost_per_kg
-                elif phase == 'transport':
-                    phases[phase]['greenhouse_gas_kg'] += component.get_weight_kg() * component.material.transport_co2e_kg_per_kg
-                    phases[phase]['water_liters'] += component.get_weight_kg() * component.material.transport_water_liters_per_kg
-                    phases[phase]['energy_kwh'] += component.get_weight_kg() * component.material.transport_energy_kwh_per_kg
-                    phases[phase]['land_m2'] += component.get_weight_kg() * component.material.transport_land_m2_per_kg
-                    phases[phase]['cost_usd'] += component.get_weight_kg() * component.material.transport_cost_per_kg
-                elif phase == 'end_of_life':
-                    phases[phase]['greenhouse_gas_kg'] += component.get_weight_kg() * component.material.end_of_life_co2e_kg_per_kg
-                    phases[phase]['water_liters'] += component.get_weight_kg() * component.material.end_of_life_water_liters_per_kg
-                    phases[phase]['energy_kwh'] += component.get_weight_kg() * component.material.end_of_life_energy_kwh_per_kg
-                    phases[phase]['land_m2'] += component.get_weight_kg() * component.material.end_of_life_land_m2_per_kg
-                    phases[phase]['cost_usd'] += component.get_weight_kg() * component.material.end_of_life_cost_per_kg
-        
+                source_field = f"{phase}_source"
+                source_text = getattr(component.material, source_field, "")
+                
+                for metric, suffix in metrics_map.items():
+                    attr_name = f"{phase}_{suffix}_per_kg"
+                    factor = getattr(component.material, attr_name, 0)
+                    impact = w * factor
+                    
+                    phases[phase][metric]['value'] += impact
+                    if impact > 0:
+                        phases[phase][metric]['sources'].append({
+                            'item': component.material.name,
+                            'value': impact,
+                            'calculation': f"{w:.3g} kg * {factor:.3g}",
+                            'source': source_text
+                        })
+
+        # Use Phase
         # Add use phase impacts (these are per use, so multiply by uses_per_year for annualized impact)
-        phases['use']['greenhouse_gas_kg'] = self.use_co2e_kg_per_use * self.uses_per_year
-        phases['use']['water_liters'] = self.use_water_liters_per_use * self.uses_per_year
-        phases['use']['energy_kwh'] = self.use_energy_kwh_per_use * self.uses_per_year
-        phases['use']['land_m2'] = self.use_land_m2_per_use * self.uses_per_year
-        phases['use']['cost_usd'] = self.use_cost_per_use * self.uses_per_year
+        use_source = self.use_phase_source
+        
+        product_metrics_map = {
+            'greenhouse_gas_kg': 'co2e_kg',
+            'water_liters': 'water_liters',
+            'energy_kwh': 'energy_kwh',
+            'land_m2': 'land_m2',
+            'cost_usd': 'cost'
+        }
+        
+        for metric, suffix in product_metrics_map.items():
+            if metric == 'cost_usd':
+                 attr = "use_cost_per_use"
+            else:
+                 attr = f"use_{suffix}_per_use"
+                 
+            per_use = getattr(self, attr, 0)
+            total = per_use * self.uses_per_year
+            
+            phases['use'][metric]['value'] = total
+            if total > 0:
+                phases['use'][metric]['sources'].append({
+                    'item': "Direct Use (Annual)",
+                    'value': total,
+                    'calculation': f"{per_use:.3g} / use * {self.uses_per_year} uses/yr",
+                    'source': use_source
+                })
         
         return phases
 

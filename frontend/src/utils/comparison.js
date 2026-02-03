@@ -22,6 +22,14 @@
  */
 function getAnnualImpact(product, impactType) {
   const baseImpact = product.impacts[impactType] || 0;
+  
+  // Handle rich object structure (Backend v2)
+  if (typeof baseImpact === 'object' && baseImpact !== null && 'value' in baseImpact) {
+    // The new backend structure returns annualized values directly
+    return baseImpact.value;
+  }
+  
+  // Legacy logic (Backwards compatibility if needed, or if input is per-item)
   const usesPerYear = product.uses_per_year || 1;
   const lifespanUses = product.average_lifespan_uses || 1;
   
@@ -92,6 +100,9 @@ export function compareProducts(product1, product2, impactType) {
   };
 }
 
+// Helper to extract numeric value from potential rich object
+const getVal = (v) => (typeof v === 'object' && v !== null && 'value' in v) ? v.value : (v || 0);
+
 /**
  * Calculate overall environmental impact score for a product
  * Lower score is better (less environmental impact)
@@ -104,10 +115,10 @@ export function calculateEnvironmentalScore(product) {
   // Normalize different impact types to a common scale
   // These factors help make different units comparable
   const normalizedImpacts = {
-    ghg: (impacts.greenhouse_gas_kg || 0) / 100, // Scale CO2e
-    water: (impacts.water_liters || 0) / 10000, // Scale water
-    energy: (impacts.energy_kwh || 0) / 10, // Scale energy
-    land: (impacts.land_m2 || 0) / 100, // Scale land
+    ghg: getVal(impacts.greenhouse_gas_kg) / 100, // Scale CO2e
+    water: getVal(impacts.water_liters) / 10000, // Scale water
+    energy: getVal(impacts.energy_kwh) / 10, // Scale energy
+    land: getVal(impacts.land_m2) / 100, // Scale land
   };
   
   // Average the normalized impacts
@@ -160,21 +171,43 @@ export function getAnnualImpactByPhase(product, impactType) {
   const usesPerYear = product.uses_per_year || 1;
   const lifespanUses = product.average_lifespan_uses || 1;
   const itemsPerYear = usesPerYear / lifespanUses;
+
+  const extract = (phaseName) => {
+      const raw = phases[phaseName]?.[impactType];
+      return { 
+          val: getVal(raw),
+          sources: (typeof raw === 'object' && raw?.sources) ? raw.sources : [] 
+      };
+  };
+  
+  const p = extract('production');
+  const t = extract('transport');
+  const e = extract('end_of_life');
+  const u = extract('use');
   
   // Material phases are per-item, so multiply by items per year
-  const production = (phases.production?.[impactType] || 0) * itemsPerYear;
-  const transport = (phases.transport?.[impactType] || 0) * itemsPerYear;
-  const endOfLife = (phases.end_of_life?.[impactType] || 0) * itemsPerYear;
+  const productionVal = p.val * itemsPerYear;
+  const transportVal = t.val * itemsPerYear;
+  const endOfLifeVal = e.val * itemsPerYear;
   
   // Use phase is per-use, so multiply by uses per year
-  const use = (phases.use?.[impactType] || 0) * usesPerYear;
+  // Wait! Backend get_impact_by_phase ALREADY multiplied 'use' by 'uses_per_year' in 'get_impact_by_phase'??
+  // Let's check backend.
+  // Backend: phases['use'][metric]['value'] = total (where total = per_use * self.uses_per_year)
+  // So 'u.val' IS Annualized Use Impact.
+  // BUT the PREVIOUS JS code said: `const use = (phases.use?.[impactType] || 0) * usesPerYear;`
+  // This implies previous backend returned Per Use.
+  // My NEW backend returns Annualized.
+  // So I should NOT multiply by usesPerYear again for Use phase.
+  
+  const useVal = u.val; // My backend sends annualized use phase.
   
   return {
-    production,
-    transport,
-    end_of_life: endOfLife,
-    use,
-    total: production + transport + endOfLife + use
+    production: { value: productionVal, sources: p.sources },
+    transport: { value: transportVal, sources: t.sources },
+    end_of_life: { value: endOfLifeVal, sources: e.sources },
+    use: { value: useVal, sources: u.sources },
+    total: productionVal + transportVal + endOfLifeVal + useVal
   };
 }
 
@@ -185,9 +218,9 @@ export function getAnnualImpactByPhase(product, impactType) {
  */
 function calculateComponentTotalImpact(impacts) {
   return (
-    (impacts.greenhouse_gas_kg || 0) / 100 +
-    (impacts.water_liters || 0) / 10000 +
-    (impacts.energy_kwh || 0) / 10 +
-    (impacts.land_m2 || 0) / 100
+    getVal(impacts.greenhouse_gas_kg) / 100 +
+    getVal(impacts.water_liters) / 10000 +
+    getVal(impacts.energy_kwh) / 10 +
+    getVal(impacts.land_m2) / 100
   );
 }
