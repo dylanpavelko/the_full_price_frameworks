@@ -1,23 +1,25 @@
 .products {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem 1rem;
+  padding: var(--spacing-xl) var(--spacing-md);
 }
 
 .products__header {
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: var(--spacing-xl);
 }
 
 .products__header h1 {
-  margin: 0 0 1rem 0;
-  color: #2c3e50;
-  font-size: 2rem;
+  margin: 0 0 var(--spacing-md) 0;
+  color: var(--color-primary);
+  font-size: 2.5rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
 }
 
 .products__header p {
   margin: 0;
-  color: #666;
+  color: var(--color-text-muted);
   font-size: 1.1rem;
   max-width: 600px;
   margin-left: auto;
@@ -26,26 +28,29 @@
 
 .products__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--spacing-lg);
 }
 
 .products__error,
 .products__empty {
   text-align: center;
-  padding: 3rem 1rem;
-  color: #666;
+  padding: 4rem 1rem;
+  color: var(--color-text-muted);
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--color-border);
 }
 
 .products__error h2,
 .products__empty h2 {
-  color: #2c3e50;
-  margin: 0 0 1rem 0;
+  color: var(--color-primary);
+  margin: 0 0 var(--spacing-md) 0;
 }
 
 @media (max-width: 768px) {
   .products__header h1 {
-    font-size: 1.5rem;
+    font-size: 2rem;
   }
   
   .products__grid {

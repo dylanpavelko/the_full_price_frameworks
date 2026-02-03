@@ -1,14 +1,20 @@
+/* Header Modern Styles */
+
 .header {
-  background-color: #2c3e50;
-  color: white;
-  padding: 1.5rem 0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: var(--color-bg);
+  color: var(--color-text-main);
+  padding: 1rem 0;
+  box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .header__container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 1rem;
+  padding: 0 var(--spacing-md);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -16,45 +22,52 @@
 
 .header__logo {
   text-decoration: none;
-  color: white;
+  display: flex;
+  flex-direction: column;
 }
 
 .header__logo h1 {
+  font-size: 1.5rem;
+  font-weight: 800;
   margin: 0;
-  font-size: 1.8rem;
+  color: var(--color-primary);
+  letter-spacing: -0.02em;
 }
 
 .header__tagline {
-  margin: 0.25rem 0 0 0;
-  font-size: 0.9rem;
-  opacity: 0.9;
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  font-weight: 500;
 }
 
 .header__nav {
   display: flex;
-  gap: 2rem;
+  gap: var(--spacing-md);
+  align-items: center;
 }
 
 .header__link {
-  color: white;
+  color: var(--color-text-main);
   text-decoration: none;
   font-weight: 500;
-  transition: opacity 0.2s;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s;
+  font-size: 0.95rem;
 }
 
-.header__link:hover {
-  opacity: 0.8;
+.header__link:hover,
+.header__link:focus {
+  color: var(--color-primary);
+  background-color: var(--color-water);
 }
 
+/* Responsive */
 @media (max-width: 768px) {
   .header__container {
     flex-direction: column;
-    gap: 1rem;
-  }
-  
-  .header__nav {
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 1rem;
+    gap: var(--spacing-md);
+    text-align: center;
   }
 }

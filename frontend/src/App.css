@@ -1,4 +1,40 @@
-/* Global styles for The Full Price */
+/* --- The Full Price - Modern Sustainable Design System --- */
+
+:root {
+  /* Palette */
+  --color-primary: #1B4D3E;       /* Deep Forest Green */
+  --color-primary-light: #2C6E58; /* Lighter Forest */
+  --color-secondary: #3E8E9C;     /* Muted Teal (Water) */
+  --color-tertiary: #8C6E5D;      /* Earthy Brown (Land) */
+  --color-accent: #D4A373;        /* Soft Sand/Orange */
+  
+  /* Environment Accents */
+  --color-water: #E0F2F1;         /* Very Light Teal */
+  --color-air: #F0F4F8;           /* Very Light Grey-Blue */
+  --color-land: #F7F5F3;          /* Warm Off-White */
+
+  /* Neutrals */
+  --color-bg: #FFFFFF;
+  --color-surface: #FFFFFF;
+  --color-text-main: #1F2937;
+  --color-text-muted: #6B7280;
+  --color-border: #E5E7EB;
+
+  /* Spacing */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 2rem;
+  --spacing-xl: 4rem;
+
+  /* Radii & Shadows */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1.5rem;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
 
 * {
   box-sizing: border-box;
@@ -6,89 +42,124 @@
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-text-main);
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: #ffffff;
-  color: #333;
-}
-
-html {
-  scroll-behavior: smooth;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-weight: 600;
+  color: var(--color-primary);
+  line-height: 1.25;
+  margin-top: 0;
 }
 
+h1 { font-size: 2.5rem; font-weight: 800; letter-spacing: -0.02em; }
+h2 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.01em; }
+h3 { font-size: 1.5rem; font-weight: 600; }
+
 a {
-  color: #3498db;
+  color: var(--color-primary);
   text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
 }
 
 a:hover {
-  text-decoration: underline;
+  color: var(--color-secondary);
+}
+
+button, .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75em 1.5em;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+button:focus, .btn:focus {
+  outline: 2px solid var(--color-secondary);
+  outline-offset: 2px;
+}
+
+/* Helper Classes used in components */
+.btn-primary {
+  background-color: var(--color-primary);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-primary-light);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.card {
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: var(--spacing-lg);
+  border: 1px solid var(--color-border);
+  transition: box-shadow 0.2s;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-secondary);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-md);
 }
 
 .app-main {
-  min-height: calc(100vh - 200px);
+  min-height: 80vh;
+  /* subtle pattern or gradient for the main bg */
+  background: linear-gradient(180deg, var(--color-air) 0%, #FFFFFF 300px);
 }
 
-.about {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 2rem 1rem;
+/* Form Elements */
+input, select, textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  background: var(--color-surface);
+  transition: border-color 0.2s;
 }
 
-.about__container {
-  background: white;
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(27, 77, 62, 0.1);
 }
 
-.about h1 {
-  color: #2c3e50;
-  font-size: 2rem;
-  margin: 0 0 1.5rem 0;
-}
-
-.about h2 {
-  color: #2c3e50;
-  font-size: 1.3rem;
-  margin: 2rem 0 1rem 0;
-}
-
-.about p {
-  line-height: 1.6;
-  color: #555;
-  margin: 0 0 1rem 0;
-}
-
-.about ul {
-  padding-left: 1.5rem;
-}
-
-.about li {
-  margin: 0.75rem 0;
-  line-height: 1.6;
-  color: #555;
-}
-
+/* Footer & Utils */
 .footer {
-  background-color: #2c3e50;
-  color: white;
-  padding: 2rem 0;
-  text-align: center;
-  margin-top: 3rem;
+  background-color: var(--color-primary);
+  color: #fff;
+  padding: var(--spacing-xl) 0;
+  margin-top: auto;
 }
 
-.footer__container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1rem;
-}
+/* Typography Helpers */
+.text-muted { color: var(--color-text-muted); }
+.text-primary { color: var(--color-primary); }
+.text-secondary { color: var(--color-secondary); }
 
-.footer p {
-  margin: 0.5rem 0;
-  font-size: 0.95rem;
+/* Responsive */
+@media (max-width: 768px) {
+  h1 { font-size: 2rem; }
+  h2 { font-size: 1.5rem; }
+  .container { padding: 0 var(--spacing-sm); }
 }
