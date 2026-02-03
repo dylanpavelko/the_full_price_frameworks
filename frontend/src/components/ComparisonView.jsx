@@ -406,27 +406,13 @@ export function ComparisonView({ product1, product2 }) {
       </div>
 
       {/* Unit toggle below summary table */}
-      <div className="comparison__unit-toggle-row" style={{ margin: '1.5rem 0', display: 'flex', justifyContent: 'center' }}>
+      <div className="comparison__unit-toggle-row">
         <div className="comparison__unit-toggle-segmented" role="group" aria-label="Unit Toggle">
           <button
             className={useImperial ? 'comparison__unit-toggle' : 'comparison__unit-toggle active'}
             aria-pressed={!useImperial}
             onClick={() => setUseImperial(false)}
             tabIndex={useImperial ? 0 : -1}
-            style={{
-              borderTopLeftRadius: '1.5em',
-              borderBottomLeftRadius: '1.5em',
-              borderTopRightRadius: 0,
-              borderBottomRightRadius: 0,
-              borderRight: '1px solid #ccc',
-              background: !useImperial ? '#2d7be5' : '#f5f5f5',
-              color: !useImperial ? '#fff' : '#333',
-              fontWeight: !useImperial ? 'bold' : 'normal',
-              zIndex: !useImperial ? 2 : 1,
-              transition: 'background 0.2s, color 0.2s',
-              boxShadow: !useImperial ? '0 2px 8px #2d7be522' : 'none',
-              outline: !useImperial ? '2px solid #2d7be5' : 'none',
-            }}
           >
             Metric
           </button>
@@ -435,20 +421,6 @@ export function ComparisonView({ product1, product2 }) {
             aria-pressed={useImperial}
             onClick={() => setUseImperial(true)}
             tabIndex={!useImperial ? 0 : -1}
-            style={{
-              borderTopRightRadius: '1.5em',
-              borderBottomRightRadius: '1.5em',
-              borderTopLeftRadius: 0,
-              borderBottomLeftRadius: 0,
-              borderLeft: '1px solid #ccc',
-              background: useImperial ? '#2d7be5' : '#f5f5f5',
-              color: useImperial ? '#fff' : '#333',
-              fontWeight: useImperial ? 'bold' : 'normal',
-              zIndex: useImperial ? 2 : 1,
-              transition: 'background 0.2s, color 0.2s',
-              boxShadow: useImperial ? '0 2px 8px #2d7be522' : 'none',
-              outline: useImperial ? '2px solid #2d7be5' : 'none',
-            }}
           >
             Imperial
           </button>
