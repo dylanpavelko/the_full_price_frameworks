@@ -20,6 +20,7 @@ import {
 } from '../utils/formatting.js';
 import { compareProducts, getItemsPerYear, getAnnualImpactByPhase } from '../utils/comparison.js';
 import { CalculationModal } from './CalculationModal';
+import { BreakEvenChart } from './BreakEvenChart';
 import './ComparisonView.css';
 
 export function ComparisonView({ product1, product2 }) {
@@ -517,6 +518,8 @@ export function ComparisonView({ product1, product2 }) {
           </button>
         </div>
       </div>
+
+      <BreakEvenChart product1={product1} product2={product2} />
 
       {/* PHASE BREAKDOWNS */}
       <div className="comparison__phase-section">

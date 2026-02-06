@@ -1,0 +1,66 @@
+.breakeven-chart {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 30px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.breakeven-chart h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #2c3e50;
+}
+
+.breakeven-chart__tabs {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.breakeven-chart__tab {
+  padding: 8px 16px;
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+  color: #666;
+}
+
+.breakeven-chart__tab:hover {
+  background: #f8f9fa;
+}
+
+.breakeven-chart__tab.active {
+  background: #2a9d8f;
+  color: white;
+  border-color: #2a9d8f;
+  font-weight: 500;
+}
+
+.breakeven-chart__graph {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.breakeven-chart__svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.breakeven-chart__note {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 0.9em;
+  color: #666;
+  line-height: 1.5;
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 6px;
+}
