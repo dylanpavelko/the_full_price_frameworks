@@ -10,7 +10,7 @@
       "average_lifespan_uses": 5000.0,
       "impacts": {
         "greenhouse_gas_kg": {
-          "value": 3.2908399999999998,
+          "value": 10.59084,
           "sources": [
             {
               "item": "Manufacturing & EOL (Annualized)",
@@ -45,29 +45,29 @@
                   "source": {
                     "url": "http://www.google.com",
                     "name": "google",
-                    "note": "just a test for end of life"
+                    "note": "cost associated with paying for landfill services"
                   }
                 }
               ]
             },
             {
               "item": "Use Phase (Annual)",
-              "value": 3.2849999999999997,
+              "value": 10.585,
               "calculation": "Annual direct use",
               "source": {
                 "url": "",
                 "name": "",
-                "note": ""
+                "note": "assumes 1/40th of a wash load per use in a washing machine that uses 50 liters per cycle, and a washer dryer that uses 0.5kWH + 2.5kWh\r\nassumes average ~.38 kg CO2 per kWH"
               },
               "sub_sources": [
                 {
                   "item": "Direct Use (Annual)",
-                  "value": 3.2849999999999997,
-                  "calculation": "0.009 / use * 365.0 uses/yr",
+                  "value": 10.585,
+                  "calculation": "0.029 / use * 365.0 uses/yr",
                   "source": {
                     "url": "",
                     "name": "",
-                    "note": ""
+                    "note": "assumes 1/40th of a wash load per use in a washing machine that uses 50 liters per cycle, and a washer dryer that uses 0.5kWH + 2.5kWh\r\nassumes average ~.38 kg CO2 per kWH"
                   }
                 }
               ]
@@ -75,7 +75,7 @@
           ]
         },
         "water_liters": {
-          "value": 408.81095000000005,
+          "value": 478.16095,
           "sources": [
             {
               "item": "Manufacturing & EOL (Annualized)",
@@ -110,29 +110,29 @@
                   "source": {
                     "url": "http://www.google.com",
                     "name": "google",
-                    "note": "just a test for end of life"
+                    "note": "cost associated with paying for landfill services"
                   }
                 }
               ]
             },
             {
               "item": "Use Phase (Annual)",
-              "value": 386.90000000000003,
+              "value": 456.25,
               "calculation": "Annual direct use",
               "source": {
                 "url": "",
                 "name": "",
-                "note": ""
+                "note": "assumes 1/40th of a wash load per use in a washing machine that uses 50 liters per cycle, and a washer dryer that uses 0.5kWH + 2.5kWh\r\nassumes average ~.38 kg CO2 per kWH"
               },
               "sub_sources": [
                 {
                   "item": "Direct Use (Annual)",
-                  "value": 386.90000000000003,
-                  "calculation": "1.06 / use * 365.0 uses/yr",
+                  "value": 456.25,
+                  "calculation": "1.25 / use * 365.0 uses/yr",
                   "source": {
                     "url": "",
                     "name": "",
-                    "note": ""
+                    "note": "assumes 1/40th of a wash load per use in a washing machine that uses 50 liters per cycle, and a washer dryer that uses 0.5kWH + 2.5kWh\r\nassumes average ~.38 kg CO2 per kWH"
                   }
                 }
               ]
@@ -140,7 +140,7 @@
           ]
         },
         "energy_kwh": {
-          "value": 8.78837875,
+          "value": 27.40337875,
           "sources": [
             {
               "item": "Manufacturing & EOL (Annualized)",
@@ -175,29 +175,29 @@
                   "source": {
                     "url": "http://www.google.com",
                     "name": "google",
-                    "note": "just a test for end of life"
+                    "note": "cost associated with paying for landfill services"
                   }
                 }
               ]
             },
             {
               "item": "Use Phase (Annual)",
-              "value": 8.76,
+              "value": 27.375,
               "calculation": "Annual direct use",
               "source": {
                 "url": "",
                 "name": "",
-                "note": ""
+                "note": "assumes 1/40th of a wash load per use in a washing machine that uses 50 liters per cycle, and a washer dryer that uses 0.5kWH + 2.5kWh\r\nassumes average ~.38 kg CO2 per kWH"
               },
               "sub_sources": [
                 {
                   "item": "Direct Use (Annual)",
-                  "value": 8.76,
-                  "calculation": "0.024 / use * 365.0 uses/yr",
+                  "value": 27.375,
+                  "calculation": "0.075 / use * 365.0 uses/yr",
                   "source": {
                     "url": "",
                     "name": "",
-                    "note": ""
+                    "note": "assumes 1/40th of a wash load per use in a washing machine that uses 50 liters per cycle, and a washer dryer that uses 0.5kWH + 2.5kWh\r\nassumes average ~.38 kg CO2 per kWH"
                   }
                 }
               ]
@@ -230,7 +230,7 @@
                   "source": {
                     "url": "http://www.google.com",
                     "name": "google",
-                    "note": "just a test for end of life"
+                    "note": "cost associated with paying for landfill services"
                   }
                 }
               ]
@@ -273,7 +273,7 @@
                   "source": {
                     "url": "http://www.google.com",
                     "name": "google",
-                    "note": "just a test for end of life"
+                    "note": "cost associated with paying for landfill services"
                   }
                 }
               ]
@@ -285,7 +285,7 @@
               "source": {
                 "url": "",
                 "name": "",
-                "note": ""
+                "note": "assumes 1/40th of a wash load per use in a washing machine that uses 50 liters per cycle, and a washer dryer that uses 0.5kWH + 2.5kWh\r\nassumes average ~.38 kg CO2 per kWH"
               },
               "sub_sources": [
                 {
@@ -295,7 +295,7 @@
                   "source": {
                     "url": "",
                     "name": "",
-                    "note": ""
+                    "note": "assumes 1/40th of a wash load per use in a washing machine that uses 50 liters per cycle, and a washer dryer that uses 0.5kWH + 2.5kWh\r\nassumes average ~.38 kg CO2 per kWH"
                   }
                 }
               ]
@@ -458,7 +458,7 @@
                 "source": {
                   "url": "http://www.google.com",
                   "name": "google",
-                  "note": "just a test for end of life"
+                  "note": "cost associated with paying for landfill services"
                 }
               }
             ]
@@ -473,7 +473,7 @@
                 "source": {
                   "url": "http://www.google.com",
                   "name": "google",
-                  "note": "just a test for end of life"
+                  "note": "cost associated with paying for landfill services"
                 }
               }
             ]
@@ -488,7 +488,7 @@
                 "source": {
                   "url": "http://www.google.com",
                   "name": "google",
-                  "note": "just a test for end of life"
+                  "note": "cost associated with paying for landfill services"
                 }
               }
             ]
@@ -503,7 +503,7 @@
                 "source": {
                   "url": "http://www.google.com",
                   "name": "google",
-                  "note": "just a test for end of life"
+                  "note": "cost associated with paying for landfill services"
                 }
               }
             ]
@@ -518,7 +518,7 @@
                 "source": {
                   "url": "http://www.google.com",
                   "name": "google",
-                  "note": "just a test for end of life"
+                  "note": "cost associated with paying for landfill services"
                 }
               }
             ]
@@ -526,46 +526,46 @@
         },
         "use": {
           "greenhouse_gas_kg": {
-            "value": 3.2849999999999997,
+            "value": 10.585,
             "sources": [
               {
                 "item": "Direct Use (Annual)",
-                "value": 3.2849999999999997,
-                "calculation": "0.009 / use * 365.0 uses/yr",
+                "value": 10.585,
+                "calculation": "0.029 / use * 365.0 uses/yr",
                 "source": {
                   "url": "",
                   "name": "",
-                  "note": ""
+                  "note": "assumes 1/40th of a wash load per use in a washing machine that uses 50 liters per cycle, and a washer dryer that uses 0.5kWH + 2.5kWh\r\nassumes average ~.38 kg CO2 per kWH"
                 }
               }
             ]
           },
           "water_liters": {
-            "value": 386.90000000000003,
+            "value": 456.25,
             "sources": [
               {
                 "item": "Direct Use (Annual)",
-                "value": 386.90000000000003,
-                "calculation": "1.06 / use * 365.0 uses/yr",
+                "value": 456.25,
+                "calculation": "1.25 / use * 365.0 uses/yr",
                 "source": {
                   "url": "",
                   "name": "",
-                  "note": ""
+                  "note": "assumes 1/40th of a wash load per use in a washing machine that uses 50 liters per cycle, and a washer dryer that uses 0.5kWH + 2.5kWh\r\nassumes average ~.38 kg CO2 per kWH"
                 }
               }
             ]
           },
           "energy_kwh": {
-            "value": 8.76,
+            "value": 27.375,
             "sources": [
               {
                 "item": "Direct Use (Annual)",
-                "value": 8.76,
-                "calculation": "0.024 / use * 365.0 uses/yr",
+                "value": 27.375,
+                "calculation": "0.075 / use * 365.0 uses/yr",
                 "source": {
                   "url": "",
                   "name": "",
-                  "note": ""
+                  "note": "assumes 1/40th of a wash load per use in a washing machine that uses 50 liters per cycle, and a washer dryer that uses 0.5kWH + 2.5kWh\r\nassumes average ~.38 kg CO2 per kWH"
                 }
               }
             ]
@@ -584,7 +584,7 @@
                 "source": {
                   "url": "",
                   "name": "",
-                  "note": ""
+                  "note": "assumes 1/40th of a wash load per use in a washing machine that uses 50 liters per cycle, and a washer dryer that uses 0.5kWH + 2.5kWh\r\nassumes average ~.38 kg CO2 per kWH"
                 }
               }
             ]
@@ -592,9 +592,9 @@
         }
       },
       "use_phase": {
-        "co2e_kg_per_use": 0.009,
-        "water_liters_per_use": 1.06,
-        "energy_kwh_per_use": 0.024,
+        "co2e_kg_per_use": 0.029,
+        "water_liters_per_use": 1.25,
+        "energy_kwh_per_use": 0.075,
         "land_m2_per_use": 0.0,
         "cost_per_use": 0.006
       },
@@ -1074,5 +1074,5 @@
       ]
     }
   ],
-  "export_timestamp": "2026-02-03T07:38:21.181809"
+  "export_timestamp": "2026-02-06T06:21:32.071490"
 }

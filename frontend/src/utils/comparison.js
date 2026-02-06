@@ -186,6 +186,7 @@ export function getAnnualImpactByPhase(product, impactType) {
   const u = extract('use');
   
   // Material phases are per-item, so multiply by items per year
+  // Always multiply material phases by items per year (products needed per year)
   const productionVal = p.val * itemsPerYear;
   const transportVal = t.val * itemsPerYear;
   const endOfLifeVal = e.val * itemsPerYear;

@@ -258,7 +258,13 @@ export function ComparisonView({ product1, product2 }) {
 
     const handleClick = (data, name) => {
       if (data && typeof data === 'object' && 'sources' in data) {
-        setModalData({ data, title: `${name} - ${label}`, unit: unitOverride });
+        const product = name === product1.name ? product1 : product2;
+        setModalData({ 
+          data, 
+          title: `${name} - ${label}`, 
+          unit: unitOverride,
+          productsPerYear: getItemsPerYear(product)
+        });
       }
     };
 
@@ -323,7 +329,13 @@ export function ComparisonView({ product1, product2 }) {
 
     const handlePhaseClick = (data, pName, phaseLabel) => {
       if (data && typeof data === 'object' && 'sources' in data) {
-        setModalData({ data, title: `${pName} - ${phaseLabel} (${label})`, unit: unitOverride });
+        const product = pName === product1.name ? product1 : product2;
+        setModalData({ 
+          data, 
+          title: `${pName} - ${phaseLabel} (${label})`, 
+          unit: unitOverride,
+          productsPerYear: getItemsPerYear(product)
+        });
       }
     };
 
@@ -564,6 +576,7 @@ export function ComparisonView({ product1, product2 }) {
         data={modalData?.data}
         title={modalData?.title}
         unit={modalData?.unit}
+        productsPerYear={modalData?.productsPerYear}
       />
     </div>
   );
