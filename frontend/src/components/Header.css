@@ -23,6 +23,18 @@
 .header__logo {
   text-decoration: none;
   display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header__logo-icon {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+}
+
+.header__logo-text {
+  display: flex;
   flex-direction: column;
 }
 
@@ -69,5 +81,13 @@
     flex-direction: column;
     gap: var(--spacing-md);
     text-align: center;
+  }
+  
+  .header__logo {
+    justify-content: center;
+  }
+  
+  .header__tagline {
+    display: none;
   }
 }

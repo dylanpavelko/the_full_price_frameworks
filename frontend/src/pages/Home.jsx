@@ -15,7 +15,7 @@ export function Home() {
           <h1>Understand the True Cost of Your Purchases</h1>
           <p>
             Every product you buy has a hidden cost—to your finances, the environment, 
-            and natural resources. The Full Price helps you see the complete picture.
+            and natural resources. theFullPrice.com helps you see the complete picture.
           </p>
           <div className="hero__cta">
             <Link to="/products" className="cta-button">

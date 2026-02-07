@@ -39,9 +39,9 @@ function About() {
   return (
     <div className="about">
       <div className="about__container">
-        <h1>About The Full Price</h1>
+        <h1>About theFullPrice.com</h1>
         <p>
-          The Full Price is a project dedicated to helping consumers understand 
+          theFullPrice.com is a project dedicated to helping consumers understand 
           the complete impact of their purchases—from production to disposal.
         </p>
         <h2>Our Mission</h2>
@@ -70,7 +70,7 @@ function Footer() {
   return (
     <footer className="footer">
       <div className="footer__container">
-        <p>&copy; 2024 The Full Price. All rights reserved.</p>
+        <p>&copy; {new Date().getFullYear()} theFullPrice.com. All rights reserved.</p>
         <p>Built with transparency and open data.</p>
       </div>
     </footer>
