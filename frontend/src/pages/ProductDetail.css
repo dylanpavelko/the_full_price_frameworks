@@ -218,3 +218,125 @@
     grid-template-columns: 1fr;
   }
 }
+
+.related-comparison-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  margin-bottom: var(--spacing-md);
+  padding: var(--spacing-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  transition: all 0.2s;
+  background-color: var(--color-background);
+}
+
+.related-comparison-link:hover {
+  border-color: var(--color-primary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.related-comparison-link h4 {
+  margin: 0 0 var(--spacing-xs) 0;
+  color: var(--color-primary);
+  font-size: 1rem;
+}
+
+.related-comparison-link:last-child {
+  margin-bottom: 0;
+}
+
+.comparison-excerpt {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.related-comparisons-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.product-comparisons .related-comparison-link {
+  height: 100%; /* Equal height cards */
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing-lg);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.product-comparisons .related-comparison-link h4 {
+  font-size: 1.25rem;
+  margin-bottom: var(--spacing-sm);
+}
+
+.no-comparisons {
+  font-style: italic;
+  color: var(--color-text-muted);
+  background: var(--color-background-alt);
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-md);
+}
+
+/* Unified Sidebar Styles */
+.sidebar-box {
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-lg);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: var(--spacing-lg);
+}
+
+.sidebar-box h3 {
+  margin: 0 0 var(--spacing-md) 0;
+  color: var(--color-primary);
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: var(--spacing-sm);
+}
+
+/* Condensed Material Composition for Sidebar */
+.sidebar-components-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.sidebar-component-item {
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1px solid var(--color-air);
+}
+.sidebar-component-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.sc-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+}
+
+.sc-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--color-primary);
+}
+
+.sc-weight {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.sc-impacts {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  display: flex;
+  gap: var(--spacing-md);
+}

@@ -7,7 +7,7 @@ import {
   formatEnergy, 
   formatLand 
 } from '../utils/formatting';
-import { getItemsPerYear } from '../utils/comparison';
+import { getItemsPerYear, getBreakEvenParams } from '../utils/comparison';
 
 export function BreakEvenChart({ product1, product2 }) {
   const [activeMetric, setActiveMetric] = useState('cost_usd');
@@ -24,50 +24,8 @@ export function BreakEvenChart({ product1, product2 }) {
   const chartData = useMemo(() => {
     if (!product1 || !product2) return null;
 
-    const getParams = (product) => {
-      const isConsumable = (product.average_lifespan_uses || 1) <= 1;
-      const phases = product.impacts_by_phase || {};
-      const getVal = (v) => (typeof v === 'object' && v !== null && 'value' in v) ? v.value : (v || 0);
-      
-      let initial = 0;
-      let slope = 0;
-      
-      if (activeMetric === 'cost_usd') {
-        const itemsPerYear = getItemsPerYear(product);
-        if (isConsumable) {
-          // Consumable: Pay purchase price * quantity every year
-          initial = 0; // Starts at 0 cost, accumulates daily/yearly
-          slope = (product.purchase_price_usd || 0) * itemsPerYear;
-        } else {
-          // Durable: Pay purchase price upfront
-          initial = product.purchase_price_usd || 0;
-          // Annual running cost (e.g. washing)
-          slope = getVal(phases['use']?.['cost_usd']);
-        }
-      } else {
-        // Environmental Metrics
-        if (isConsumable) {
-          initial = 0;
-          // Check if data is already annualized (object with value) or simple per-item number
-          const rawImpact = product.impacts?.[activeMetric];
-          if (typeof rawImpact === 'object' && rawImpact !== null && 'value' in rawImpact) {
-            slope = rawImpact.value;
-          } else {
-            // Simple number -> Per Item Impact. Annualize it.
-            slope = (rawImpact || 0) * getItemsPerYear(product);
-          }
-        } else {
-          // Durable
-          const getPhaseVal = (phase) => getVal(phases[phase]?.[activeMetric]);
-          initial = getPhaseVal('production') + getPhaseVal('transport') + getPhaseVal('end_of_life');
-          slope = getPhaseVal('use');
-        }
-      }
-      return { initial, slope };
-    };
-
-    const p1 = getParams(product1);
-    const p2 = getParams(product2);
+    const p1 = getBreakEvenParams(product1, activeMetric);
+    const p2 = getBreakEvenParams(product2, activeMetric);
 
     // Calculate break-even year (intersection point)
     // p1.init + p1.slope * t = p2.init + p2.slope * t

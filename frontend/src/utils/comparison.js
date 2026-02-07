@@ -225,3 +225,73 @@ function calculateComponentTotalImpact(impacts) {
     getVal(impacts.land_m2) / 100
   );
 }
+
+/**
+ * Calculate the break-even data for a given metric and product.
+ * Returns { initial, slope } where:
+ * - initial: Upfront cost/impact (t=0)
+ * - slope: Annual accrual rate
+ * 
+ * @param {Object} product - Product to analyze
+ * @param {string} metric - 'cost_usd', 'greenhouse_gas_kg', etc.
+ * @returns {Object} { initial, slope }
+ */
+export function getBreakEvenParams(product, metric) {
+  const isConsumable = (product.average_lifespan_uses || 1) <= 1;
+  const phases = product.impacts_by_phase || {};
+  const getVal = (v) => (typeof v === 'object' && v !== null && 'value' in v) ? v.value : (v || 0);
+  
+  let initial = 0;
+  let slope = 0;
+  
+  if (metric === 'cost_usd') {
+    const itemsPerYear = getItemsPerYear(product);
+    if (isConsumable) {
+      // Consumable: Pay purchase price * quantity every year
+      initial = 0; // Starts at 0 cost, accumulates daily/yearly
+      slope = (product.purchase_price_usd || 0) * itemsPerYear;
+    } else {
+      // Durable: Pay purchase price upfront
+      initial = product.purchase_price_usd || 0;
+      // Annual running cost (e.g. washing phase)
+      slope = getVal(phases['use']?.['cost_usd']);
+    }
+  } else {
+    // Environmental Metrics
+    if (isConsumable) {
+      initial = 0;
+      // Check if data is already annualized (object with value) or simple per-item number
+      const rawImpact = product.impacts?.[metric];
+      if (typeof rawImpact === 'object' && rawImpact !== null && 'value' in rawImpact) {
+        slope = rawImpact.value;
+      } else {
+        // Simple number -> Per Item Impact. Annualize it.
+        // Note: getAnnualImpact handles this, but here we want clarity on linear equation
+        slope = (rawImpact || 0) * getItemsPerYear(product);
+      }
+    } else {
+      // Durable
+      const getPhaseVal = (phase) => getVal(phases[phase]?.[metric]);
+      initial = getPhaseVal('production') + getPhaseVal('transport') + getPhaseVal('end_of_life');
+      slope = getPhaseVal('use');
+    }
+  }
+  return { initial, slope };
+}
+
+/**
+ * Calculate the break-even year between two products for a specific metric.
+ * @param {Object} p1 - Params { initial, slope } for product 1
+ * @param {Object} p2 - Params { initial, slope } for product 2
+ * @returns {number|null} Year intersection occurs (t), or null if lines parallel/diverge in wrong way
+ */
+export function calculateBreakEvenIntersection(p1, p2) {
+  const slopeDiff = p1.slope - p2.slope;
+  if (Math.abs(slopeDiff) > 0.000001) {
+    const t = (p2.initial - p1.initial) / slopeDiff;
+    if (t > 0 && t < 100) { // Reasonable timeline check
+      return t;
+    }
+  }
+  return null;
+}
