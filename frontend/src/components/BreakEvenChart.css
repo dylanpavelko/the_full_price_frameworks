@@ -18,6 +18,7 @@
   justify-content: center;
   gap: 10px;
   margin-bottom: 20px;
+  flex-wrap: wrap; /* Allow wrapping on small screens */
 }
 
 .breakeven-chart__tab {
@@ -52,6 +53,42 @@
   width: 100%;
   height: auto;
   overflow: visible;
+}
+
+/* Default fonts for Desktop (when SVG is displayed large) */
+.chart-axis-label {
+  font-size: 16px;
+}
+.chart-axis-title {
+  font-size: 18px;
+}
+.chart-product-label {
+  font-size: 16px;
+}
+.chart-breakeven-label {
+  font-size: 20px;
+}
+.chart-breakeven-halo {
+  stroke-width: 4px;
+}
+
+/* Mobile Adjustments (when SVG is displayed small) */
+@media (max-width: 768px) {
+  .chart-axis-label {
+    font-size: 24px;
+  }
+  .chart-axis-title {
+    font-size: 32px;
+  }
+  .chart-product-label {
+    font-size: 24px;
+  }
+  .chart-breakeven-label {
+    font-size: 32px;
+  }
+  .chart-breakeven-halo {
+    stroke-width: 6px;
+  }
 }
 
 .breakeven-chart__note {

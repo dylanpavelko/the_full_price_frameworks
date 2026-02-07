@@ -65,9 +65,9 @@ export function BreakEvenChart({ product1, product2 }) {
   if (!chartData) return null;
 
   const { maxYear, maxY, p1, p2, breakEvenYear } = chartData;
-  const height = 300;
+  const height = 400; /* Increased height for better mobile scaling */
   const width = 600;
-  const padding = { top: 20, right: 60, bottom: 40, left: 60 };
+  const padding = { top: 50, right: 150, bottom: 100, left: 130 };
   const graphWidth = width - padding.left - padding.right;
   const graphHeight = height - padding.top - padding.bottom;
 
@@ -108,7 +108,7 @@ export function BreakEvenChart({ product1, product2 }) {
             return (
               <g key={ratio}>
                 <line x1={padding.left} y1={y} x2={width - padding.right} y2={y} stroke="#eee" />
-                <text x={padding.left - 10} y={y + 4} textAnchor="end" fontSize="11" fill="#666">
+                <text x={padding.left - 15} y={y + 8} textAnchor="end" className="chart-axis-label" fill="#666">
                   {formatY(val)}
                 </text>
               </g>
@@ -123,7 +123,7 @@ export function BreakEvenChart({ product1, product2 }) {
             return (
               <g key={i}>
                 <line x1={x} y1={padding.top} x2={x} y2={height - padding.bottom} stroke="#f5f5f5" />
-                <text x={x} y={height - padding.bottom + 15} textAnchor="middle" fontSize="11" fill="#666">
+                <text x={x} y={height - padding.bottom + 40} textAnchor="middle" className="chart-axis-label" fill="#666">
                   {i}
                 </text>
               </g>
@@ -131,7 +131,7 @@ export function BreakEvenChart({ product1, product2 }) {
           })}
           
           {/* Axis Titles */}
-          <text x={width/2} y={height - 5} textAnchor="middle" fontSize="12" fill="#333">Years Owned</text>
+          <text x={width/2} y={height - 20} textAnchor="middle" className="chart-axis-title" fill="#333">Years Owned</text>
           
           {/* Product Lines */}
           {/* Product 1 */}
@@ -148,8 +148,8 @@ export function BreakEvenChart({ product1, product2 }) {
           />
 
           {/* Product Labels at end of lines */}
-          <text x={width - padding.right + 5} y={getY(p1.initial + p1.slope * maxYear)} fill="#e76f51" fontSize="11" alignmentBaseline="middle">{product1.name}</text>
-          <text x={width - padding.right + 5} y={getY(p2.initial + p2.slope * maxYear)} fill="#264653" fontSize="11" alignmentBaseline="middle">{product2.name}</text>
+          <text x={width - padding.right + 15} y={getY(p1.initial + p1.slope * maxYear)} fill="#e76f51" className="chart-product-label" alignmentBaseline="middle">{product1.name}</text>
+          <text x={width - padding.right + 15} y={getY(p2.initial + p2.slope * maxYear)} fill="#264653" className="chart-product-label" alignmentBaseline="middle">{product2.name}</text>
 
           {/* Break-even Point */}
           {breakEvenYear && (
@@ -157,9 +157,29 @@ export function BreakEvenChart({ product1, product2 }) {
               <circle 
                 cx={getX(breakEvenYear)} 
                 cy={getY(p1.initial + p1.slope * breakEvenYear)} 
-                r="6" fill="#2a9d8f" stroke="white" strokeWidth="2" 
+                r="14" fill="#2a9d8f" stroke="white" strokeWidth="3" 
               />
-              <text x={getX(breakEvenYear)} y={getY(p1.initial + p1.slope * breakEvenYear) - 15} textAnchor="middle" fill="#2a9d8f" fontSize="11" fontWeight="bold">
+              {/* White background rect/halo for readability */}
+               <text 
+                x={getX(breakEvenYear)} 
+                y={getY(p1.initial + p1.slope * breakEvenYear) - 35} 
+                textAnchor="middle" 
+                stroke="white" 
+                strokeLinejoin="round"
+                className="chart-breakeven-label chart-breakeven-halo"
+                fontWeight="bold"
+                opacity="0.8"
+              >
+                {breakEvenYear < 1 ? `${Math.round(breakEvenYear * 365)} days` : `${breakEvenYear.toFixed(1)} yrs`}
+              </text>
+              <text 
+                x={getX(breakEvenYear)} 
+                y={getY(p1.initial + p1.slope * breakEvenYear) - 35} 
+                textAnchor="middle" 
+                fill="#2a9d8f" 
+                className="chart-breakeven-label"
+                fontWeight="bold"
+              >
                 {breakEvenYear < 1 ? `${Math.round(breakEvenYear * 365)} days` : `${breakEvenYear.toFixed(1)} yrs`}
               </text>
             </g>
