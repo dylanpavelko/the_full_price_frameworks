@@ -357,55 +357,85 @@ background: var(--color-air);
 
 /* Responsive */
 @media (max-width: 768px) {
-.comparison {
-padding: 1.5rem;
-}
+  .comparison {
+    padding: var(--spacing-md);
+  }
 
-.comparison__header-row,
-.comparison__metric-row {
-grid-template-columns: 1fr;
-gap: 1rem;
-}
+  /* --- Main Comparison Table --- */
+  
+  /* Hide the "Metric" text in header, keep products side-by-side */
+  .comparison__header-row {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .comparison__header-row .comparison__metric-label {
+    display: none;
+  }
 
-.comparison__metric-label,
-.comparison__metric-value {
-border-right: none;
-border-bottom: 1px solid var(--color-border);
-padding: 0.75rem;
-}
+  .comparison__product-name {
+    font-size: 0.9rem;
+    padding: 0.75rem 0.25rem;
+  }
 
-.comparison__metric-row:last-child .comparison__metric-value:last-child {
-border-bottom: none;
-}
+  /* Cells: Label on top row (full width), Values on second row (split) */
+  .comparison__metric-row {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    position: static;
+    padding-left: 0;
+    gap: 0;
+  }
 
-.comparison__header-row .comparison__metric-value {
-display: none;
-}
+  .comparison__metric-row .comparison__metric-label {
+    grid-column: 1 / -1;
+    position: static;
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--color-border);
+    text-align: center;
+    background: var(--color-air);
+    padding: 0.5rem;
+    margin: 0;
+  }
 
-.comparison__header-row .comparison__metric-label {
-display: none;
-}
+  .comparison__metric-value {
+    padding: 0.75rem 0.25rem;
+    font-size: 1rem;
+    border-right: none;
+    border-bottom: none; /* Row handles bottom border */
+  }
 
-.comparison__metric-row {
-position: relative;
-padding-left: 50%;
-}
+  /* Add border between the two values */
+  .comparison__metric-row .comparison__metric-value:nth-child(2) {
+    border-right: 1px solid var(--color-border);
+  }
 
-.comparison__metric-row .comparison__metric-label {
-position: absolute;
-left: 0;
-top: 0;
-width: 45%;
-background: var(--color-air);
-margin: 0;
-border-bottom: none;
-}
+  /* --- Phase Breakdown Table (Apply same logic) --- */
 
-.comparison__header-row {
-background: none;
-border: none;
-padding: 0;
-}
+  .comparison__phase-table-header-row {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .comparison__phase-table-label {
+    display: none;
+  }
+
+  .comparison__phase-table-row {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+  }
+
+  .comparison__phase-table-phase {
+    grid-column: 1 / -1;
+    text-align: center;
+    background: var(--color-water);
+    border-bottom: 1px solid var(--color-border);
+    padding: 0.5rem;
+  }
+
+  .comparison__phase-table-value:nth-child(2) {
+    border-right: 1px solid var(--color-border);
+  }
 }
 
 /* Unit Toggle */
