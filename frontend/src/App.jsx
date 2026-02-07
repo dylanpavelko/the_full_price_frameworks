@@ -15,7 +15,13 @@ import './App.css';
 
 export function App() {
   return (
-    <Router basename={import.meta.env.BASE_URL}>
+    <Router 
+      basename={import.meta.env.BASE_URL}
+      future={{ 
+        v7_startTransition: true, 
+        v7_relativeSplatPath: true 
+      }}
+    >
       <Header />
       <main className="app-main">
         <Routes>
