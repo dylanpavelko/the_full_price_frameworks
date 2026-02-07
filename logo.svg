@@ -21,5 +21,8 @@
 
     <!-- The Tag Hole -->
     <circle cx="50" cy="25" r="7" fill="#ffffff" />
+
+    <!-- Thin White Border -->
+    <use href="#tag-shape" fill="none" stroke="#ffffff" stroke-width="1.5" />
   </g>
 </svg>
