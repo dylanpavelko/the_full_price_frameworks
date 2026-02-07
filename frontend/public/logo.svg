@@ -4,7 +4,7 @@
   <!-- Group with rotation and slight scale to fit corners -->
   <g transform="rotate(-30 50 50) scale(0.9) translate(5.5 5.5)">
     <defs>
-      <path id="tag-shape" d="M50 5 L90 30 L90 85 Q90 95 80 95 L20 95 Q10 95 10 85 L10 30 L50 5 Z" />
+      <path id="tag-shape" d="M50 5 L80 25 L80 85 Q80 95 70 95 L30 95 Q20 95 20 85 L20 25 L50 5 Z" />
       <clipPath id="tag-clip">
         <use href="#tag-shape" />
       </clipPath>

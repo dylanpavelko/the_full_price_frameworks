@@ -2,7 +2,7 @@
   <g transform="rotate(-30 50 50) scale(0.9) translate(5.5 5.5)">
     <defs>
       <!-- The main tag shape path -->
-      <path id="tag-shape" d="M50 5 L85 25 L85 85 Q85 95 75 95 L25 95 Q15 95 15 85 L15 25 L50 5 Z" />
+      <path id="tag-shape" d="M50 5 L80 25 L80 85 Q80 95 70 95 L30 95 Q20 95 20 85 L20 25 L50 5 Z" />
       
       <!-- Clip path to keep waves inside -->
       <clipPath id="tag-clip">
