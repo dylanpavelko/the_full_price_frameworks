@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <desc>The Full Price Logo - A pie chart representing the breakdown of true cost</desc>
+  
+  <!-- Top Left Slice: Cost -->
+  <path d="M50 50 L50 5 A45 45 0 0 0 5 50 Z" fill="#264653" />
+  
+  <!-- Top Right Slice: Environment (Teal) -->
+  <path d="M50 50 L95 50 A45 45 0 0 0 50 5 Z" fill="#2a9d8f" />
+  
+  <!-- Bottom Slice: Impact (Orange) -->
+  <path d="M50 50 L5 50 A45 45 0 0 0 95 50 Z" fill="#e76f51" />
+  
+  <!-- Separator lines for clean look -->
+  <path d="M50 50 L50 4" stroke="white" stroke-width="3" fill="none"/>
+  <path d="M50 50 L96 50" stroke="white" stroke-width="3" fill="none"/>
+  <path d="M50 50 L4 50" stroke="white" stroke-width="3" fill="none"/>
+</svg>

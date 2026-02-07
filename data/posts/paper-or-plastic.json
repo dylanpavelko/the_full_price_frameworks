@@ -1,0 +1,281 @@
+{
+  "post": {
+    "id": 2,
+    "title": "Paper or Plastic",
+    "slug": "paper-or-plastic",
+    "post_type": "comparison",
+    "content": "\"Paper or Plastic?\" \r\nShould you have a grocer helping you bag your groceries this is a familiar question.\r\n\r\nGrowing up I was encouraged use plastic, it's recyclable. Paper cuts down trees. Now I hear paper is sustainable, plastic ends up in landfill.\r\n\r\nSo which is it?",
+    "excerpt": "",
+    "author": "The Full Price Team",
+    "created_at": "2026-02-07T02:30:34.552122+00:00",
+    "updated_at": "2026-02-07T02:30:34.552146+00:00",
+    "featured": false,
+    "comparison": {
+      "product_ids": [
+        3,
+        4
+      ],
+      "products": [
+        {
+          "id": 3,
+          "name": "Plastic Bag",
+          "description": "",
+          "slug": "plastic-bag",
+          "purchase_price_usd": 0.0,
+          "uses_per_year": 1.0,
+          "average_lifespan_uses": 1.0,
+          "impacts": {
+            "greenhouse_gas_kg": {
+              "value": 0.0,
+              "sources": []
+            },
+            "water_liters": {
+              "value": 0.0,
+              "sources": []
+            },
+            "energy_kwh": {
+              "value": 0.0,
+              "sources": []
+            },
+            "land_m2": {
+              "value": 0.0,
+              "sources": []
+            },
+            "cost_usd": {
+              "value": 0.0,
+              "sources": []
+            }
+          },
+          "impacts_by_phase": {
+            "production": {
+              "greenhouse_gas_kg": {
+                "value": 0.0,
+                "sources": []
+              },
+              "water_liters": {
+                "value": 0.0,
+                "sources": []
+              },
+              "energy_kwh": {
+                "value": 0.0,
+                "sources": []
+              },
+              "land_m2": {
+                "value": 0.0,
+                "sources": []
+              },
+              "cost_usd": {
+                "value": 0.0,
+                "sources": []
+              }
+            },
+            "transport": {
+              "greenhouse_gas_kg": {
+                "value": 0.0,
+                "sources": []
+              },
+              "water_liters": {
+                "value": 0.0,
+                "sources": []
+              },
+              "energy_kwh": {
+                "value": 0.0,
+                "sources": []
+              },
+              "land_m2": {
+                "value": 0.0,
+                "sources": []
+              },
+              "cost_usd": {
+                "value": 0.0,
+                "sources": []
+              }
+            },
+            "end_of_life": {
+              "greenhouse_gas_kg": {
+                "value": 0.0,
+                "sources": []
+              },
+              "water_liters": {
+                "value": 0.0,
+                "sources": []
+              },
+              "energy_kwh": {
+                "value": 0.0,
+                "sources": []
+              },
+              "land_m2": {
+                "value": 0.0,
+                "sources": []
+              },
+              "cost_usd": {
+                "value": 0.0,
+                "sources": []
+              }
+            },
+            "use": {
+              "greenhouse_gas_kg": {
+                "value": 0.0,
+                "sources": []
+              },
+              "water_liters": {
+                "value": 0.0,
+                "sources": []
+              },
+              "energy_kwh": {
+                "value": 0.0,
+                "sources": []
+              },
+              "land_m2": {
+                "value": 0.0,
+                "sources": []
+              },
+              "cost_usd": {
+                "value": 0.0,
+                "sources": []
+              }
+            }
+          },
+          "use_phase": {
+            "co2e_kg_per_use": 0.0,
+            "water_liters_per_use": 0.0,
+            "energy_kwh_per_use": 0.0,
+            "land_m2_per_use": 0.0,
+            "cost_per_use": 0.0
+          },
+          "components": []
+        },
+        {
+          "id": 4,
+          "name": "Paper Bag",
+          "description": "",
+          "slug": "paper-bag",
+          "purchase_price_usd": 0.0,
+          "uses_per_year": 1.0,
+          "average_lifespan_uses": 1.0,
+          "impacts": {
+            "greenhouse_gas_kg": {
+              "value": 0.0,
+              "sources": []
+            },
+            "water_liters": {
+              "value": 0.0,
+              "sources": []
+            },
+            "energy_kwh": {
+              "value": 0.0,
+              "sources": []
+            },
+            "land_m2": {
+              "value": 0.0,
+              "sources": []
+            },
+            "cost_usd": {
+              "value": 0.0,
+              "sources": []
+            }
+          },
+          "impacts_by_phase": {
+            "production": {
+              "greenhouse_gas_kg": {
+                "value": 0.0,
+                "sources": []
+              },
+              "water_liters": {
+                "value": 0.0,
+                "sources": []
+              },
+              "energy_kwh": {
+                "value": 0.0,
+                "sources": []
+              },
+              "land_m2": {
+                "value": 0.0,
+                "sources": []
+              },
+              "cost_usd": {
+                "value": 0.0,
+                "sources": []
+              }
+            },
+            "transport": {
+              "greenhouse_gas_kg": {
+                "value": 0.0,
+                "sources": []
+              },
+              "water_liters": {
+                "value": 0.0,
+                "sources": []
+              },
+              "energy_kwh": {
+                "value": 0.0,
+                "sources": []
+              },
+              "land_m2": {
+                "value": 0.0,
+                "sources": []
+              },
+              "cost_usd": {
+                "value": 0.0,
+                "sources": []
+              }
+            },
+            "end_of_life": {
+              "greenhouse_gas_kg": {
+                "value": 0.0,
+                "sources": []
+              },
+              "water_liters": {
+                "value": 0.0,
+                "sources": []
+              },
+              "energy_kwh": {
+                "value": 0.0,
+                "sources": []
+              },
+              "land_m2": {
+                "value": 0.0,
+                "sources": []
+              },
+              "cost_usd": {
+                "value": 0.0,
+                "sources": []
+              }
+            },
+            "use": {
+              "greenhouse_gas_kg": {
+                "value": 0.0,
+                "sources": []
+              },
+              "water_liters": {
+                "value": 0.0,
+                "sources": []
+              },
+              "energy_kwh": {
+                "value": 0.0,
+                "sources": []
+              },
+              "land_m2": {
+                "value": 0.0,
+                "sources": []
+              },
+              "cost_usd": {
+                "value": 0.0,
+                "sources": []
+              }
+            }
+          },
+          "use_phase": {
+            "co2e_kg_per_use": 0.0,
+            "water_liters_per_use": 0.0,
+            "energy_kwh_per_use": 0.0,
+            "land_m2_per_use": 0.0,
+            "cost_per_use": 0.0
+          },
+          "components": []
+        }
+      ]
+    }
+  },
+  "export_timestamp": "2026-02-07T02:45:04.031050"
+}

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <desc>The Full Price Logo - A layered price tag representing multi-dimensional cost</desc>
+  
+  <!-- Group with rotation and slight scale to fit corners -->
+  <g transform="rotate(-30 50 50) scale(0.9) translate(5.5 5.5)">
+    <defs>
+      <path id="tag-shape" d="M50 5 L80 25 L80 85 Q80 95 70 95 L30 95 Q20 95 20 85 L20 25 L50 5 Z" />
+      <clipPath id="tag-clip">
+        <use href="#tag-shape" />
+      </clipPath>
+    </defs>
+
+    <!-- Base Layer (Cost - Dark) -->
+    <use href="#tag-shape" fill="#264653" />
+
+    <!-- Middle Layer (Water/Environment - Teal) -->
+    <path d="M0 100 L100 100 L100 50 Q75 35 50 50 Q25 65 0 50 Z" fill="#2a9d8f" clip-path="url(#tag-clip)" />
+
+    <!-- Bottom Layer (Impact/Energy - Orange) -->
+    <path d="M0 100 L100 100 L100 75 Q75 65 50 75 Q25 85 0 75 Z" fill="#e76f51" clip-path="url(#tag-clip)" />
+
+    <!-- The Tag Hole -->
+    <circle cx="50" cy="25" r="7" fill="#ffffff" />
+  </g>
+</svg>
