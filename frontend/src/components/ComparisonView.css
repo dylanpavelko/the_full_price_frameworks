@@ -414,10 +414,25 @@ background: var(--color-air);
 
   .comparison__phase-table-header-row {
     grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    padding: 0; /* Remove padding so label fills width */
   }
   
   .comparison__phase-table-label {
-    display: none;
+    display: block;
+    grid-column: 1 / -1; /* Span full width */
+    text-align: center;
+    background: var(--color-secondary); /* Use secondary color for distinction */
+    color: var(--color-text-main);
+    padding: 0.75rem;
+    font-size: 1.1rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  /* Adjust product names to sit nicely below the new label */
+  .comparison__phase-table-product {
+    padding: 0.75rem;
+    background: var(--color-water);
   }
 
   .comparison__phase-table-row {
