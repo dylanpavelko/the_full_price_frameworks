@@ -108,6 +108,29 @@ export function ComparisonView({ product1, product2 }) {
     land: useImperial ? formatLandImperial : formatLand,
   };
 
+  const getUnitAndFactor = (metricKey) => {
+    if (!useImperial) {
+       switch(metricKey) {
+         case 'cost_usd': return { unit: 'USD', factor: 1 };
+         case 'greenhouse_gas_kg': return { unit: 'kg CO₂e', factor: 1 };
+         case 'water_liters': return { unit: 'liters', factor: 1 };
+         case 'energy_kwh': return { unit: 'kWh', factor: 1 };
+         case 'land_m2': return { unit: 'm²', factor: 1 };
+         default: return { unit: '', factor: 1 };
+       }
+    } else {
+       // Imperial
+       switch(metricKey) {
+         case 'cost_usd': return { unit: 'USD', factor: 1 };
+         case 'greenhouse_gas_kg': return { unit: 'lbs CO₂e', factor: 2.20462 };
+         case 'water_liters': return { unit: 'gallons', factor: 0.264172 };
+         case 'energy_kwh': return { unit: 'BTU', factor: 3412.14 };
+         case 'land_m2': return { unit: 'ft²', factor: 10.7639 };
+         default: return { unit: '', factor: 1 };
+       }
+    }
+  };
+
   // Get phase breakdowns for each metric
   const phaseBreakdowns = {
     ghg: {
@@ -260,11 +283,13 @@ export function ComparisonView({ product1, product2 }) {
     const handleClick = (data, name) => {
       if (data && typeof data === 'object' && 'sources' in data) {
         const product = name === product1.name ? product1 : product2;
+        const { unit, factor } = getUnitAndFactor(metricKey);
         setModalData({ 
           data, 
           title: `${name} - ${label}`, 
-          unit: unitOverride,
-          productsPerYear: getItemsPerYear(product)
+          unit: unit,
+          productsPerYear: getItemsPerYear(product),
+          conversionFactor: factor
         });
       }
     };
@@ -331,11 +356,13 @@ export function ComparisonView({ product1, product2 }) {
     const handlePhaseClick = (data, pName, phaseLabel) => {
       if (data && typeof data === 'object' && 'sources' in data) {
         const product = pName === product1.name ? product1 : product2;
+        const { unit, factor } = getUnitAndFactor(impactKey);
         setModalData({ 
           data, 
           title: `${pName} - ${phaseLabel} (${label})`, 
-          unit: unitOverride,
-          productsPerYear: getItemsPerYear(product)
+          unit: unit,
+          productsPerYear: getItemsPerYear(product),
+          conversionFactor: factor
         });
       }
     };
@@ -580,6 +607,7 @@ export function ComparisonView({ product1, product2 }) {
         title={modalData?.title}
         unit={modalData?.unit}
         productsPerYear={modalData?.productsPerYear}
+        conversionFactor={modalData?.conversionFactor || 1}
       />
     </div>
   );

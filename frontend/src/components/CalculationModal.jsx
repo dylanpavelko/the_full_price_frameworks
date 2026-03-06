@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './CalculationModal.css';
 
-export function CalculationModal({ isOpen, onClose, data, title, unit, productsPerYear }) {
+export function CalculationModal({ isOpen, onClose, data, title, unit, productsPerYear, conversionFactor = 1 }) {
   const [showDetails, setShowDetails] = useState(false);
 
   if (!isOpen || !data) return null;
@@ -23,7 +23,7 @@ export function CalculationModal({ isOpen, onClose, data, title, unit, productsP
 
   const formatVal = (val) => {
     return val !== undefined && val !== null 
-      ? val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 }) 
+      ? (val * conversionFactor).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 }) 
       : '0';
   };
 
@@ -181,7 +181,7 @@ export function CalculationModal({ isOpen, onClose, data, title, unit, productsP
                           <h5>Components:</h5>
                           {source.sub_sources.map((sub, sIdx) => (
                             <div key={sIdx} className="calc-sub-item">
-                              {sub.item}: <strong>{formatVal(sub.value)}</strong>
+                              {sub.item}: <strong>{formatVal(sub.value)} {unit}</strong>
                             </div>
                           ))}
                         </div>
