@@ -1,10 +1,31 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './CalculationModal.css';
 
 export function CalculationModal({ isOpen, onClose, data, title, unit, productsPerYear }) {
+  const [showDetails, setShowDetails] = useState(false);
+
   if (!isOpen || !data) return null;
 
   const sources = data.sources || [];
+  const totalValue = typeof data.value === 'number' ? data.value : 0;
+  
+  // 1. Determine Products Per Year (ppy)
+  // distinct from 'uses per year' because durable goods last >1 year
+  let ppy = typeof productsPerYear === 'number' ? productsPerYear : (data.productsPerYear || 0);
+  
+  // 2. Calculate Per-item impact
+  // If ppy is 0, we can't divide, so default to 0
+  const perItemValue = (ppy && ppy !== 0) ? (totalValue / ppy) : 0;
+  
+  // 3. Determine if this is a durable good (lasts > 1 year) or consumable
+  const isDurable = ppy < 1 && ppy > 0;
+  const yearsLasts = isDurable ? (1 / ppy) : 0;
+
+  const formatVal = (val) => {
+    return val !== undefined && val !== null 
+      ? val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 }) 
+      : '0';
+  };
 
   const renderSource = (s) => {
     if (!s) return null;
@@ -14,14 +35,45 @@ export function CalculationModal({ isOpen, onClose, data, title, unit, productsP
       <span className="rich-source">
         {url ? (
           <a href={url} target="_blank" rel="noopener noreferrer" className="metric-link">
-            {name || url} <span className="info-icon">ℹ</span>
+            {name || url} <span className="info-icon">↗</span>
           </a>
         ) : (
           <span className="source-name">{name}</span>
         )}
-        {note && <span className="source-note"> {note}</span>}
+        {note && <span className="source-note"> • {note}</span>}
       </span>
     );
+  };
+
+  // Dynamic label based on the unit type
+  const getPerItemLabel = () => {
+    if (!unit) return 'Impact per Item';
+    // Normalize string to check
+    const u = unit.toLowerCase();
+    
+    // Cost/Dollars
+    if (u.includes('cost') || u.includes('$') || u.includes('usd') || u.includes('price')) {
+      return 'Dollars per Item';
+    }
+    // Emissions/Carbon
+    if (u.includes('co2') || u.includes('emissions') || u.includes('greenhouse')) {
+      return 'Emissions per Item (kg CO₂e)';
+    }
+    // Water
+    if (u.includes('water') || u.includes('liter') || u.includes('gallon')) {
+      if (u === 'liters' || u === 'gallons') return `Water per Item (${unit})`;
+      return `Water per Item`;
+    }
+    // Energy
+    if (u.includes('energy') || u.includes('kwh') || u.includes('joule')) {
+      return 'Energy per Item (kWh)';
+    }
+    // Land
+    if (u.includes('land') || u.includes('m2') || u.includes('sq')) {
+      return 'Land Use per Item (m²)';
+    }
+    // Default fallback
+    return `Impact per Item (${unit})`;
   };
 
   return (
@@ -33,91 +85,111 @@ export function CalculationModal({ isOpen, onClose, data, title, unit, productsP
         </div>
         
         <div className="calc-modal-body">
-          <div className="calc-modal-summary">
-            <div className="calc-metric-value">
-              {typeof data.value === 'number' ? data.value.toFixed(3) : data.value}
+          {/* SECTION 1: The Main Number */}
+          <div className="calc-hero-section">
+            <div className="calc-hero-label">Annual Impact</div>
+            <div className="calc-hero-value">
+              {formatVal(totalValue)} <span className="calc-hero-unit">{unit}</span>
             </div>
-            <div className="calc-metric-unit">{unit}</div>
-            {/* Show explicit annualization math if this is an annualized value and sub_sources exist */}
-            {Array.isArray(sources) && sources.length > 0 && sources[0].sub_sources && sources[0].sub_sources.length > 0 && (
-              <div className="calc-note-text" style={{ fontSize: '0.97em', color: '#2a7', marginTop: 4 }}>
-                <strong>How this is calculated:</strong><br />
-                {(() => {
-                  // Sum per-item values from sub_sources
-                  const perItemSum = sources[0].sub_sources.reduce((sum, sub) => sum + (typeof sub.value === 'number' ? sub.value : 0), 0);
-                  // Try to get products needed per year from calculation string or fallback to uses_per_year/average_lifespan_uses
-                  let extractedProductsPerYear = null;
-                  const calcStr = sources[0].calculation || '';
-                  const match = calcStr.match(/\*\s*([\d.]+)\s*(uses|products|items)[^\d]?/i);
-                  if (match) {
-                    extractedProductsPerYear = match[1];
-                  } else if (productsPerYear) {
-                    extractedProductsPerYear = productsPerYear;
-                  } else if (data && data.productsPerYear) {
-                    extractedProductsPerYear = data.productsPerYear;
-                  }
-                  return (
-                    <>
-                      <span>
-                        ({perItemSum.toLocaleString(undefined, { maximumFractionDigits: 3 })} per item)
-                        {extractedProductsPerYear ? ` × ${parseFloat(Number(extractedProductsPerYear).toFixed(3))} products needed per year` : ''}
-                        {extractedProductsPerYear ? ` = ${(perItemSum * extractedProductsPerYear).toLocaleString(undefined, { maximumFractionDigits: 3 })}` : ''}
-                      </span>
-                    </>
-                  );
-                })()}
-              </div>
-            )}
+            <div className="calc-hero-sub">per year of use</div>
           </div>
 
-          <div className="calc-breakdown-list">
-            <h4>Calculation Breakdown</h4>
-            {sources.length === 0 ? (
-               <p className="calc-no-data">No detailed breakdown available.</p>
-            ) : (
-              sources.map((source, idx) => (
-                <div key={idx} className="calc-breakdown-item">
-                  <div className="calc-item-header">
-                    <span className="calc-item-name">{source.item}</span>
-                    <span className="calc-item-value">{typeof source.value === 'number' ? source.value.toFixed(3) : source.value}</span>
-                  </div>
-                  <div className="calc-item-details">
-                    <div className="calc-row">
-                      <span className="calc-label">Calculation:</span>
-                      <code className="calc-formula">{source.calculation}</code>
-                    </div>
-                    {/* Indicate if products needed per year is included */}
-                    {source.calculation && /items per year|uses\/yr|products needed per year|annualized|amortized|\*.*uses_per_year|\/.*lifespan_uses/i.test(source.calculation) && (
-                      <div className="calc-row">
-                        <span className="calc-label" style={{ color: '#2a7' }}>Note:</span>
-                        <span className="calc-note-text">This value accounts for the number of products needed per year.</span>
-                      </div>
-                    )}
-                    {source.source && (
-                      <div className="calc-row">
-                        <span className="calc-label">Source:</span>
-                        <span className="calc-source-text">{renderSource(source.source)}</span>
-                      </div>
-                    )}
-                  </div>
-                  
-                  {source.sub_sources && source.sub_sources.length > 0 && (
-                    <div className="calc-sub-sources">
-                      <h5>Components (per item):</h5>
-                      <div className="calc-note-text" style={{ fontSize: '0.95em', color: '#888', marginBottom: 4 }}>
-                        Each component calculation below is for a single product. The total above is annualized by multiplying the per-item value by the number of products needed per year.
-                      </div>
-                      {source.sub_sources.map((sub, sIdx) => (
-                        <div key={sIdx} className="calc-sub-item">
-                          <span>{sub.item}: </span>
-                          <span>{sub.calculation}</span>
-                          {sub.source && <span className="sub-citation"> [{renderSource(sub.source)}]</span>}
-                        </div>
-                      ))}
-                    </div>
-                  )}
+          {/* SECTION 2: The "Simple Math" Story */}
+          {ppy > 0 && (
+            <div className="calc-logic-card">
+              <h4>How it works</h4>
+              
+              {/* Visual Equation */}
+              <div className="calc-equation-visual">
+                <div className="calc-eq-part">
+                  <span className="calc-eq-val">{formatVal(perItemValue)}</span>
+                  <span className="calc-eq-label">{getPerItemLabel()}</span>
                 </div>
-              ))
+                <div className="calc-eq-op">×</div>
+                <div className="calc-eq-part">
+                  <span className="calc-eq-val">
+                    {isDurable ? formatVal(ppy) : Math.ceil(ppy)}
+                  </span>
+                  <span className="calc-eq-label">Items / Year</span>
+                </div>
+                <div className="calc-eq-op">=</div>
+                <div className="calc-eq-part highlight">
+                  <span className="calc-eq-val">{formatVal(totalValue)}</span>
+                  <span className="calc-eq-label">Annual Total</span>
+                </div>
+              </div>
+
+              {/* Friendly Explanation */}
+              <div className="calc-story-text">
+                {isDurable ? (
+                  <p>
+                    This is a durable item that lasts about <strong>{yearsLasts.toFixed(1)} years</strong>. 
+                    We spread its impact over its lifetime, so heavily used long-lasting items often have lower annual impacts.
+                    <br/><br/>
+                    <em>(Math: 1 item / {yearsLasts.toFixed(1)} years = {ppy.toFixed(3)} items "used" per year)</em>
+                  </p>
+                ) : (
+                  <p>
+                    Based on typical usage, you would need about <strong>{Math.ceil(ppy)}</strong> of these every year. 
+                    The total impact is the sum of every single one used.
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* SECTION 3: The Deep Dive (Collapsible) */}
+          <div className="calc-details-section">
+            <button 
+              className="calc-toggle-btn"
+              onClick={() => setShowDetails(!showDetails)}
+            >
+              {showDetails ? 'Hide Detailed Breakdown' : 'Show Detailed Sources & Math'} 
+              <span className={`arrow ${showDetails ? 'up' : 'down'}`}>▼</span>
+            </button>
+
+            {showDetails && (
+              <div className="calc-breakdown-list">
+                {sources.length === 0 ? (
+                  <p className="calc-no-data">No deeper breakdown available.</p>
+                ) : (
+                  sources.map((source, idx) => (
+                    <div key={idx} className="calc-breakdown-item">
+                      <div className="calc-item-header">
+                        <span className="calc-item-name">{source.item}</span>
+                        <span className="calc-item-value">{formatVal(source.value)} {unit}</span>
+                      </div>
+                      
+                      {source.source && (
+                        <div className="calc-row">
+                          <span className="calc-label">Data Source:</span>
+                          <span className="calc-source-text">{renderSource(source.source)}</span>
+                        </div>
+                      )}
+                      
+                      {/* Only show raw calculation string if user really wants to check our homework */}
+                      {source.calculation && (
+                        <div className="calc-row">
+                          <span className="calc-label">Formula:</span>
+                          <code className="calc-formula">{source.calculation}</code>
+                        </div>
+                      )}
+
+                      {/* Sub-components list */}
+                      {source.sub_sources && source.sub_sources.length > 0 && (
+                        <div className="calc-sub-sources">
+                          <h5>Components:</h5>
+                          {source.sub_sources.map((sub, sIdx) => (
+                            <div key={sIdx} className="calc-sub-item">
+                              {sub.item}: <strong>{formatVal(sub.value)}</strong>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))
+                )}
+              </div>
             )}
           </div>
         </div>
