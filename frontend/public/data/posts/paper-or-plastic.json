@@ -136,6 +136,90 @@
               }
             }
           },
+          "assumptions": {
+            "all_assumptions": [
+              {
+                "key": "uses_per_year",
+                "label": "Uses per year",
+                "value": 1.0,
+                "exposed": false,
+                "category": "usage"
+              },
+              {
+                "key": "average_lifespan_uses",
+                "label": "Average lifespan (uses)",
+                "value": 1.0,
+                "exposed": false,
+                "category": "durability"
+              },
+              {
+                "key": "use_co2e_kg_per_use",
+                "label": "Use-phase CO₂e per use",
+                "value": 0.0,
+                "exposed": false,
+                "category": "use_phase"
+              },
+              {
+                "key": "use_water_liters_per_use",
+                "label": "Use-phase water per use",
+                "value": 0.0,
+                "exposed": false,
+                "category": "use_phase"
+              },
+              {
+                "key": "use_energy_kwh_per_use",
+                "label": "Use-phase energy per use",
+                "value": 0.0,
+                "exposed": false,
+                "category": "use_phase"
+              },
+              {
+                "key": "use_cost_per_use",
+                "label": "Use-phase cost per use",
+                "value": 0.0,
+                "exposed": false,
+                "category": "use_phase"
+              }
+            ],
+            "exposed_assumptions": [
+              {
+                "key": "grocery_trip_distance",
+                "label": "Grocery trip distance",
+                "description": "Assumed round-trip distance used to estimate transport-related emissions.",
+                "input_type": "select",
+                "default_option_id": "moderate",
+                "options": [
+                  {
+                    "id": "nearby",
+                    "label": "Nearby (2 mi round-trip)",
+                    "phase_multipliers": {
+                      "transport": {
+                        "greenhouse_gas_kg": 0.8
+                      }
+                    }
+                  },
+                  {
+                    "id": "moderate",
+                    "label": "Moderate (6 mi round-trip)",
+                    "phase_multipliers": {
+                      "transport": {
+                        "greenhouse_gas_kg": 1.0
+                      }
+                    }
+                  },
+                  {
+                    "id": "far",
+                    "label": "Far (12 mi round-trip)",
+                    "phase_multipliers": {
+                      "transport": {
+                        "greenhouse_gas_kg": 1.25
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
           "use_phase": {
             "co2e_kg_per_use": 0.0,
             "water_liters_per_use": 0.0,
@@ -265,6 +349,90 @@
               }
             }
           },
+          "assumptions": {
+            "all_assumptions": [
+              {
+                "key": "uses_per_year",
+                "label": "Uses per year",
+                "value": 1.0,
+                "exposed": false,
+                "category": "usage"
+              },
+              {
+                "key": "average_lifespan_uses",
+                "label": "Average lifespan (uses)",
+                "value": 1.0,
+                "exposed": false,
+                "category": "durability"
+              },
+              {
+                "key": "use_co2e_kg_per_use",
+                "label": "Use-phase CO₂e per use",
+                "value": 0.0,
+                "exposed": false,
+                "category": "use_phase"
+              },
+              {
+                "key": "use_water_liters_per_use",
+                "label": "Use-phase water per use",
+                "value": 0.0,
+                "exposed": false,
+                "category": "use_phase"
+              },
+              {
+                "key": "use_energy_kwh_per_use",
+                "label": "Use-phase energy per use",
+                "value": 0.0,
+                "exposed": false,
+                "category": "use_phase"
+              },
+              {
+                "key": "use_cost_per_use",
+                "label": "Use-phase cost per use",
+                "value": 0.0,
+                "exposed": false,
+                "category": "use_phase"
+              }
+            ],
+            "exposed_assumptions": [
+              {
+                "key": "grocery_trip_distance",
+                "label": "Grocery trip distance",
+                "description": "Assumed round-trip distance used to estimate transport-related emissions.",
+                "input_type": "select",
+                "default_option_id": "moderate",
+                "options": [
+                  {
+                    "id": "nearby",
+                    "label": "Nearby (2 mi round-trip)",
+                    "phase_multipliers": {
+                      "transport": {
+                        "greenhouse_gas_kg": 0.8
+                      }
+                    }
+                  },
+                  {
+                    "id": "moderate",
+                    "label": "Moderate (6 mi round-trip)",
+                    "phase_multipliers": {
+                      "transport": {
+                        "greenhouse_gas_kg": 1.0
+                      }
+                    }
+                  },
+                  {
+                    "id": "far",
+                    "label": "Far (12 mi round-trip)",
+                    "phase_multipliers": {
+                      "transport": {
+                        "greenhouse_gas_kg": 1.25
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
           "use_phase": {
             "co2e_kg_per_use": 0.0,
             "water_liters_per_use": 0.0,
@@ -277,5 +445,5 @@
       ]
     }
   },
-  "export_timestamp": "2026-02-07T02:45:04.031050"
+  "export_timestamp": "2026-03-16T21:44:18.918352"
 }

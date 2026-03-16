@@ -56,21 +56,20 @@ export function CalculationModal({ isOpen, onClose, data, title, unit, productsP
       return 'Dollars per Item';
     }
     // Emissions/Carbon
-    if (u.includes('co2') || u.includes('emissions') || u.includes('greenhouse')) {
-      return 'Emissions per Item (kg CO₂e)';
+    if (u.includes('co2') || u.includes('co₂') || u.includes('emissions') || u.includes('greenhouse')) {
+      return `Emissions per Item (${unit})`;
     }
     // Water
     if (u.includes('water') || u.includes('liter') || u.includes('gallon')) {
-      if (u === 'liters' || u === 'gallons') return `Water per Item (${unit})`;
-      return `Water per Item`;
+      return `Water per Item (${unit})`;
     }
     // Energy
-    if (u.includes('energy') || u.includes('kwh') || u.includes('joule')) {
-      return 'Energy per Item (kWh)';
+    if (u.includes('energy') || u.includes('kwh') || u.includes('joule') || u.includes('btu')) {
+      return `Energy per Item (${unit})`;
     }
     // Land
-    if (u.includes('land') || u.includes('m2') || u.includes('sq')) {
-      return 'Land Use per Item (m²)';
+    if (u.includes('land') || u.includes('m2') || u.includes('m²') || u.includes('sq') || u.includes('acre') || u.includes('ft²')) {
+      return `Land Use per Item (${unit})`;
     }
     // Default fallback
     return `Impact per Item (${unit})`;
@@ -108,7 +107,7 @@ export function CalculationModal({ isOpen, onClose, data, title, unit, productsP
                 <div className="calc-eq-op">×</div>
                 <div className="calc-eq-part">
                   <span className="calc-eq-val">
-                    {isDurable ? formatVal(ppy) : Math.ceil(ppy)}
+                    {isDurable ? ppy.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 3 }) : Math.ceil(ppy)}
                   </span>
                   <span className="calc-eq-label">Items / Year</span>
                 </div>

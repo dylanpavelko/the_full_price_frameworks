@@ -6,7 +6,7 @@
  * Shows two products with their impacts and highlights which is better/worse
  * for each environmental metric. Now includes lifecycle phase breakdown.
  */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   formatCurrency,
   formatGreenhouseGas,
@@ -18,20 +18,97 @@ import {
   formatEnergyImperial,
   formatLandImperial,
 } from '../utils/formatting.js';
-import { compareProducts, getItemsPerYear, getAnnualImpactByPhase } from '../utils/comparison.js';
+import {
+  compareProducts,
+  getItemsPerYear,
+  getAnnualImpactByPhase,
+  getBreakEvenParams,
+  calculateBreakEvenIntersection,
+} from '../utils/comparison.js';
+import { applyAssumptionsToProduct, getDefaultAssumptionSelections, getExposedAssumptions } from '../utils/assumptions.js';
 import { CalculationModal } from './CalculationModal';
 import { BreakEvenChart } from './BreakEvenChart';
 import './ComparisonView.css';
 
 export function ComparisonView({ product1, product2 }) {
   const [modalData, setModalData] = useState(null);
+  const [assumptionSelections, setAssumptionSelections] = useState({ product1: {}, product2: {} });
   // Toggle between grouping by phase or by metric
   const [groupByPhase, setGroupByPhase] = useState(false);
   // Toggle between metric and imperial units
   const [useImperial, setUseImperial] = useState(false);
+
+  useEffect(() => {
+    if (!product1 || !product2) {
+      return;
+    }
+
+    setAssumptionSelections({
+      product1: getDefaultAssumptionSelections(product1),
+      product2: getDefaultAssumptionSelections(product2),
+    });
+  }, [product1?.id, product2?.id]);
+
   if (!product1 || !product2) {
     return null;
   }
+
+  const exposedAssumptions1 = getExposedAssumptions(product1);
+  const exposedAssumptions2 = getExposedAssumptions(product2);
+
+  product1 = applyAssumptionsToProduct(product1, assumptionSelections.product1);
+  product2 = applyAssumptionsToProduct(product2, assumptionSelections.product2);
+
+  const updateAssumptionSelection = (side, assumptionKey, optionId) => {
+    setAssumptionSelections((prev) => ({
+      ...prev,
+      [side]: {
+        ...prev[side],
+        [assumptionKey]: optionId,
+      },
+    }));
+  };
+
+  const renderAssumptionControls = (product, side, exposedAssumptions) => {
+    if (!exposedAssumptions || exposedAssumptions.length === 0) {
+      return null;
+    }
+
+    return (
+      <div className="comparison__assumption-card">
+        <h4>{product.name}</h4>
+        {exposedAssumptions.map((assumption) => {
+          const selected = assumptionSelections[side]?.[assumption.key]
+            || assumption.default_option_id
+            || assumption.options?.[0]?.id
+            || '';
+
+          return (
+            <div className="comparison__assumption-field" key={`${side}-${assumption.key}`}>
+              <label className="comparison__assumption-label" htmlFor={`${side}-${assumption.key}`}>
+                {assumption.label}
+              </label>
+              <select
+                id={`${side}-${assumption.key}`}
+                className="comparison__assumption-select"
+                value={selected}
+                onChange={(event) => updateAssumptionSelection(side, assumption.key, event.target.value)}
+              >
+                {(assumption.options || []).map((option) => (
+                  <option key={option.id} value={option.id}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+              {assumption.description && (
+                <p className="comparison__assumption-desc">{assumption.description}</p>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
 
   // ...existing code...
 
@@ -50,15 +127,12 @@ export function ComparisonView({ product1, product2 }) {
   const debugBreakEvens = breakEvenMetrics.map(({ key, label }) => {
     const p1Annual = product1.impacts[key];
     const p2Annual = product2.impacts[key];
-    const t1 = getAdvancedBreakEven(product1, product2, key);
-    const t2 = getAdvancedBreakEven(product2, product1, key);
+    const t = getAdvancedBreakEven(product1, product2, key);
     return {
       metric: label,
       p1: p1Annual,
       p2: p2Annual,
-      break_even_1: t1,
-      break_even_2: t2,
-      min_break_even: t1 && t2 ? Math.min(t1, t2) : t1 || t2 || null
+      break_even: t,
     };
   });
 
@@ -181,64 +255,16 @@ export function ComparisonView({ product1, product2 }) {
     return breakEvens;
   }
 
-  // Advanced break-even calculation for each metric
+  // Break-even calculation for each metric (aligned with BreakEvenChart)
   function getAdvancedBreakEven(productA, productB, metric) {
-    // Upfront impact: for cost use purchase_price_usd, for others sum all non-use phases
-    let upfrontA, upfrontB;
-    if (metric === 'cost_usd') {
-      upfrontA = productA.purchase_price_usd;
-      upfrontB = productB.purchase_price_usd;
-    } else {
-      // Sum production, transport, end_of_life for the metric
-      const getUpfront = (product) => {
-        if (!product.impacts_by_phase) return 0;
-        const phases = product.impacts_by_phase;
-        const usesPerYear = product.uses_per_year || 1;
-        const lifespanUses = product.average_lifespan_uses || 1;
-        const itemsPerYear = usesPerYear / lifespanUses;
-        // Upfront = (production + transport + end_of_life) * itemsPerYear
-        const production = (phases.production?.[metric] || 0);
-        const transport = (phases.transport?.[metric] || 0);
-        const endOfLife = (phases.end_of_life?.[metric] || 0);
-        return (production + transport + endOfLife) * itemsPerYear;
-      };
-      upfrontA = getUpfront(productA);
-      upfrontB = getUpfront(productB);
-    }
-    // Annual impact (already normalized, all phases)
-    const annualA = getFullAnnualImpact(productA, metric);
-    const annualB = getFullAnnualImpact(productB, metric);
-    // If annual impacts are equal, no break-even
-    if (annualA === annualB) return null;
-    // If productA is always better, no break-even
-    if (upfrontA <= upfrontB && annualA <= annualB) return null;
-    // If productB is always better, no break-even
-    if (upfrontB <= upfrontA && annualB <= annualA) return null;
-    // Solve for t: upfrontA + t*annualA = upfrontB + t*annualB
-    // => t = (upfrontA - upfrontB) / (annualB - annualA)
-    const t = (upfrontA - upfrontB) / (annualB - annualA);
-    if (t > 0 && t < 100) return t;
-    return null;
+    const paramsA = getBreakEvenParams(productA, metric);
+    const paramsB = getBreakEvenParams(productB, metric);
+    return calculateBreakEvenIntersection(paramsA, paramsB);
   }
 
   // (removed duplicate breakEvenMetrics declaration)
-  // Calculate break-even for both product orderings and take the minimum positive value
-  const breakEvenValues = breakEvenMetrics.map(({ key }) => {
-    const t1 = getAdvancedBreakEven(product1, product2, key);
-    const t2 = getAdvancedBreakEven(product2, product1, key);
-    if (t1 && t2) return Math.min(t1, t2);
-    return t1 || t2 || null;
-  });
-  // Find the longest break-even (max value)
-  const longestBreakEven = breakEvenValues.filter(v => v !== null).reduce((max, v) => v > max ? v : max, 0);
-  let breakEvenText = '';
-  if (longestBreakEven > 0) {
-    if (longestBreakEven < 0.5) {
-      breakEvenText = ` (longest break-even: ${Math.round(longestBreakEven * 365)} days)`;
-    } else {
-      breakEvenText = ` (longest break-even: ${longestBreakEven.toFixed(1)} years)`;
-    }
-  }
+  // Calculate break-even independently per metric.
+  const breakEvenValues = breakEvenMetrics.map(({ key }) => getAdvancedBreakEven(product1, product2, key));
 
   // Prepare break-even display for all metrics
   const breakEvenDisplay = breakEvenMetrics.map(({ key, label }, idx) => {
@@ -260,6 +286,39 @@ export function ComparisonView({ product1, product2 }) {
     else acc.product2++;
     return acc;
   }, { product1: 0, product2: 0 });
+
+  const overallWinnerName = wins.product1 > wins.product2
+    ? product1.name
+    : wins.product2 > wins.product1
+      ? product2.name
+      : null;
+
+  const winnerByMetricKey = {
+    cost_usd: comparisons.cost.winner,
+    greenhouse_gas_kg: comparisons.ghg.winner,
+    water_liters: comparisons.water.winner,
+    energy_kwh: comparisons.energy.winner,
+    land_m2: comparisons.land.winner,
+  };
+
+  const longestBreakEvenForWinner = overallWinnerName
+    ? breakEvenMetrics.reduce((max, { key }, idx) => {
+        const val = breakEvenValues[idx];
+        if (winnerByMetricKey[key] !== overallWinnerName || val === null) {
+          return max;
+        }
+        return val > max ? val : max;
+      }, 0)
+    : 0;
+
+  let breakEvenText = '';
+  if (longestBreakEvenForWinner > 0) {
+    if (longestBreakEvenForWinner < 0.5) {
+      breakEvenText = ` (longest break-even: ${Math.round(longestBreakEvenForWinner * 365)} days)`;
+    } else {
+      breakEvenText = ` (longest break-even: ${longestBreakEvenForWinner.toFixed(1)} years)`;
+    }
+  }
 
   const renderMetricRow = (label, comparison, formatFn, metricKey) => {
     const p1Data = metricKey ? product1.impacts[metricKey] : null;
@@ -474,6 +533,19 @@ export function ComparisonView({ product1, product2 }) {
         </p>
         {/* Removed break-even section as requested */}
       </div>
+
+      {(exposedAssumptions1.length > 0 || exposedAssumptions2.length > 0) && (
+        <div className="comparison__assumptions">
+          <h3>Adjustable Assumptions</h3>
+          <p className="comparison__assumptions-note">
+            All values are assumptions internally; only the selected assumptions below are editable.
+          </p>
+          <div className="comparison__assumptions-grid">
+            {renderAssumptionControls(product1, 'product1', exposedAssumptions1)}
+            {renderAssumptionControls(product2, 'product2', exposedAssumptions2)}
+          </div>
+        </div>
+      )}
 
       {/* SUMMARY TABLE */}
       <div className="comparison__table">

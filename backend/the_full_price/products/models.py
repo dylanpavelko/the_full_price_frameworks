@@ -5,7 +5,9 @@ These models define the structure for storing products, materials, and their
 environmental/financial impacts. The data is calculated based on material
 weights and impact factors.
 """
+from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils.text import slugify
 
 
 class Material(models.Model):
@@ -308,6 +310,7 @@ class Product(models.Model):
             'average_lifespan_uses': self.average_lifespan_uses,
             'impacts': impact,
             'impacts_by_phase': impact_by_phase,
+            'assumptions': self.get_assumptions(),
             'use_phase': {
                 'co2e_kg_per_use': self.use_co2e_kg_per_use,
                 'water_liters_per_use': self.use_water_liters_per_use,
@@ -317,6 +320,271 @@ class Product(models.Model):
             },
             'components': [comp.to_dict() for comp in self.components.all()],
         }
+
+    def get_assumptions(self):
+        """
+        Return assumptions metadata for this product.
+
+        Includes product-specific assumptions AND global assumptions (those
+        not attached to any product or material).  Only exposed assumptions
+        are returned as editable controls for the frontend.
+        """
+        from django.db.models import Q
+
+        all_assumptions = [
+            {
+                'key': 'uses_per_year',
+                'label': 'Uses per year',
+                'value': self.uses_per_year,
+                'exposed': False,
+                'category': 'usage'
+            },
+            {
+                'key': 'average_lifespan_uses',
+                'label': 'Average lifespan (uses)',
+                'value': self.average_lifespan_uses,
+                'exposed': False,
+                'category': 'durability'
+            },
+            {
+                'key': 'use_co2e_kg_per_use',
+                'label': 'Use-phase CO₂e per use',
+                'value': self.use_co2e_kg_per_use,
+                'exposed': False,
+                'category': 'use_phase'
+            },
+            {
+                'key': 'use_water_liters_per_use',
+                'label': 'Use-phase water per use',
+                'value': self.use_water_liters_per_use,
+                'exposed': False,
+                'category': 'use_phase'
+            },
+            {
+                'key': 'use_energy_kwh_per_use',
+                'label': 'Use-phase energy per use',
+                'value': self.use_energy_kwh_per_use,
+                'exposed': False,
+                'category': 'use_phase'
+            },
+            {
+                'key': 'use_cost_per_use',
+                'label': 'Use-phase cost per use',
+                'value': self.use_cost_per_use,
+                'exposed': False,
+                'category': 'use_phase'
+            },
+        ]
+
+        # Product-specific + global assumptions
+        assumptions = (
+            Assumption.objects
+            .filter(
+                Q(product=self) | Q(product__isnull=True, material__isnull=True),
+                exposed=True,
+            )
+            .prefetch_related('options__effects')
+            .order_by('sort_order', 'id')
+        )
+
+        exposed_assumptions = []
+        for assumption in assumptions:
+            default_option_id = assumption.default_option_key or None
+            options = []
+
+            for option in assumption.options.all().order_by('sort_order', 'id'):
+                if option.is_default and not default_option_id:
+                    default_option_id = option.option_key
+
+                phase_multipliers = {}
+                for effect in option.effects.all():
+                    phase_multipliers.setdefault(effect.phase, {})[effect.metric] = effect.multiplier
+
+                options.append({
+                    'id': option.option_key,
+                    'label': option.label,
+                    'phase_multipliers': phase_multipliers,
+                })
+
+            if not default_option_id and options:
+                default_option_id = options[0]['id']
+
+            exposed_assumptions.append({
+                'key': assumption.key,
+                'label': assumption.label,
+                'description': assumption.description,
+                'input_type': assumption.input_type,
+                'default_option_id': default_option_id,
+                'options': options,
+            })
+
+        return {
+            'all_assumptions': all_assumptions,
+            'exposed_assumptions': exposed_assumptions,
+        }
+
+
+PHASE_CHOICES = [
+    ('production', 'Production'),
+    ('transport', 'Transport'),
+    ('end_of_life', 'End of Life'),
+    ('use', 'Use'),
+]
+
+METRIC_CHOICES = [
+    ('greenhouse_gas_kg', 'Greenhouse Gas (kg CO₂e)'),
+    ('water_liters', 'Water (liters)'),
+    ('energy_kwh', 'Energy (kWh)'),
+    ('land_m2', 'Land (m²)'),
+    ('cost_usd', 'Cost (USD)'),
+]
+
+
+class Assumption(models.Model):
+    """
+    A single user-facing (or internal) control that, when changed, applies
+    multipliers to one or more (phase, metric) combinations via AssumptionEffect.
+
+    Scope rules:
+      - product set  → applies only to that product
+      - material set → applies only to that material
+      - both null    → global assumption, included for every product
+    """
+    INPUT_TYPE_CHOICES = [
+        ('select', 'Select'),
+    ]
+
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name='assumptions',
+        null=True,
+        blank=True,
+    )
+    material = models.ForeignKey(
+        Material,
+        on_delete=models.CASCADE,
+        related_name='assumptions',
+        null=True,
+        blank=True,
+    )
+    key = models.CharField(
+        max_length=100,
+        blank=True,
+        editable=False,
+        help_text='Auto-derived from the label. Not editable directly.',
+    )
+    label = models.CharField(
+        max_length=255,
+        help_text='Name of this assumption (e.g. "Wash frequency", "Grocery trip distance").',
+    )
+    description = models.TextField(blank=True)
+    input_type = models.CharField(max_length=20, choices=INPUT_TYPE_CHOICES, default='select')
+    exposed = models.BooleanField(default=False)
+    default_option_key = models.CharField(max_length=100, blank=True)
+    sort_order = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['sort_order', 'id']
+
+    def save(self, *args, **kwargs):
+        """Auto-derive key from label before saving."""
+        self.key = slugify(self.label).replace('-', '_')
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        if self.product:
+            target = self.product.name
+        elif self.material:
+            target = self.material.name
+        else:
+            target = 'Global'
+        return f"{target} – {self.label}"
+
+    def clean(self):
+        super().clean()
+        if self.product_id and self.material_id:
+            raise ValidationError(
+                "An assumption can belong to a product, a material, or be global (both blank) — not both."
+            )
+
+    @property
+    def scope(self):
+        """Human-readable scope: 'Global', 'Product: X', or 'Material: X'."""
+        if self.product:
+            return f"Product: {self.product.name}"
+        if self.material:
+            return f"Material: {self.material.name}"
+        return "Global"
+
+    def to_export_dict(self):
+        options_queryset = self.options.all().order_by('sort_order', 'id')
+        options = []
+        default_option_id = self.default_option_key or None
+
+        for option in options_queryset:
+            if option.is_default and not default_option_id:
+                default_option_id = option.option_key
+
+            phase_multipliers = {}
+            for effect in option.effects.all():
+                phase_multipliers.setdefault(effect.phase, {})[effect.metric] = effect.multiplier
+
+            options.append({
+                'id': option.option_key,
+                'label': option.label,
+                'phase_multipliers': phase_multipliers,
+            })
+
+        if not default_option_id and options:
+            default_option_id = options[0]['id']
+
+        return {
+            'key': self.key,
+            'label': self.label,
+            'description': self.description,
+            'input_type': self.input_type,
+            'default_option_id': default_option_id,
+            'options': options,
+        }
+
+
+class AssumptionOption(models.Model):
+    """An individual choice within an assumption (e.g. 'Wash after every use')."""
+    assumption = models.ForeignKey(Assumption, on_delete=models.CASCADE, related_name='options')
+    option_key = models.CharField(max_length=100)
+    label = models.CharField(max_length=255)
+    is_default = models.BooleanField(default=False)
+    sort_order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['sort_order', 'id']
+        unique_together = [('assumption', 'option_key')]
+
+    def __str__(self):
+        return f"{self.assumption.label} – {self.label}"
+
+
+class AssumptionEffect(models.Model):
+    """
+    Maps an option choice to a specific (phase, metric) multiplier.
+
+    One option can have many effects — for example, "Wash after every 2 uses"
+    might halve water, energy, cost, and GHG in the use phase simultaneously.
+    """
+    option = models.ForeignKey(AssumptionOption, on_delete=models.CASCADE, related_name='effects')
+    phase = models.CharField(max_length=30, choices=PHASE_CHOICES)
+    metric = models.CharField(max_length=40, choices=METRIC_CHOICES)
+    multiplier = models.FloatField(default=1.0)
+
+    class Meta:
+        ordering = ['phase', 'metric']
+        unique_together = [('option', 'phase', 'metric')]
+
+    def __str__(self):
+        return f"{self.option} → {self.phase}/{self.metric} ×{self.multiplier}"
 
 
 class ProductComponent(models.Model):
