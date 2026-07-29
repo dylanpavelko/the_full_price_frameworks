@@ -14,7 +14,7 @@ import json
 import os
 from pathlib import Path
 from django.conf import settings
-from products.models import Product
+from products.models import Material, MaterialCategory, Product
 from posts.models import Post
 
 
@@ -35,12 +35,14 @@ class StaticDataExporter:
         
         Creates:
         - products.json: All products with their impact calculations
+        - materials.json: All materials with categories and content
         - posts.json: All published posts
         - posts/{slug}.json: Individual post files for easier caching
         """
         print("Starting static data export...")
         
         self.export_products()
+        self.export_materials()
         self.export_posts()
         self.export_individual_posts()
         
@@ -59,6 +61,33 @@ class StaticDataExporter:
         output_file = self.output_dir / 'products.json'
         self._write_json(output_file, data)
         print(f"✓ Exported {len(products)} products to {output_file}")
+
+    def export_materials(self):
+        """
+        Export all materials grouped by category to a single JSON file.
+        """
+        categories = MaterialCategory.objects.prefetch_related('materials').all()
+        materials = Material.objects.select_related('category').all()
+
+        data = {
+            'categories': [
+                {
+                    'id': cat.id,
+                    'name': cat.name,
+                    'slug': cat.slug,
+                    'description': cat.description,
+                    'typical_products': cat.typical_products,
+                    'material_slugs': [m.slug for m in cat.materials.all()],
+                }
+                for cat in categories
+            ],
+            'materials': [m.to_dict() for m in materials],
+            'export_timestamp': self._get_timestamp(),
+        }
+
+        output_file = self.output_dir / 'materials.json'
+        self._write_json(output_file, data)
+        print(f"✓ Exported {len(materials)} materials ({len(categories)} categories) to {output_file}")
 
     def export_posts(self):
         """

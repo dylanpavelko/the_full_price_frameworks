@@ -11,6 +11,7 @@ from .models import (
     AssumptionEffect,
     AssumptionOption,
     Material,
+    MaterialCategory,
     Product,
     ProductComponent,
 )
@@ -92,18 +93,36 @@ class MaterialInternalAssumptionInline(BaseAssumptionInline):
     classes = ('collapse',)
 
 
+@admin.register(MaterialCategory)
+class MaterialCategoryAdmin(admin.ModelAdmin):
+    """Admin for material taxonomy buckets."""
+    list_display = ['name', 'slug', 'material_count', 'sort_order']
+    prepopulated_fields = {'slug': ('name',)}
+    search_fields = ['name']
+    ordering = ['sort_order', 'name']
+
+    @admin.display(description='# Materials')
+    def material_count(self, obj):
+        return obj.materials.count()
+
+
 @admin.register(Material)
 class MaterialAdmin(admin.ModelAdmin):
     """
     Admin interface for Material model with lifecycle phase breakdown.
     """
-    list_display = ['name', 'production_co2e_kg_per_kg', 'transport_co2e_kg_per_kg', 'end_of_life_co2e_kg_per_kg']
-    search_fields = ['name']
-    list_filter = ['created_at']
+    list_display = ['name', 'slug', 'category', 'production_co2e_kg_per_kg', 'transport_co2e_kg_per_kg', 'end_of_life_co2e_kg_per_kg']
+    search_fields = ['name', 'slug']
+    list_filter = ['category', 'created_at']
+    prepopulated_fields = {'slug': ('name',)}
     inlines = [MaterialUserFacingAssumptionInline, MaterialInternalAssumptionInline]
     fieldsets = (
         ('Basic Information', {
-            'fields': ('name', 'description')
+            'fields': ('name', 'slug', 'category', 'description')
+        }),
+        ('Material Content (for public detail page)', {
+            'classes': ('collapse',),
+            'fields': ('sourcing_info', 'fabrication_info', 'end_of_life_info', 'environmental_notes'),
         }),
         ('Production Phase - Impact per Kilogram', {
             'description': 'Environmental and cost impacts from extracting raw materials and manufacturing.',

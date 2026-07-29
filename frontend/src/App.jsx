@@ -9,6 +9,8 @@ import { Header } from './components/Header.jsx';
 import { Home } from './pages/Home.jsx';
 import { Products } from './pages/Products.jsx';
 import { ProductDetail } from './pages/ProductDetail.jsx';
+import { Materials } from './pages/Materials.jsx';
+import { MaterialDetail } from './pages/MaterialDetail.jsx';
 import { Posts } from './pages/Posts.jsx';
 import { PostDetail } from './pages/PostDetail.jsx';
 import './App.css';
@@ -28,6 +30,8 @@ export function App() {
           <Route path="/" element={<Home />} />
           <Route path="/products" element={<Products />} />
           <Route path="/products/:slug" element={<ProductDetail />} />
+          <Route path="/materials" element={<Materials />} />
+          <Route path="/materials/:slug" element={<MaterialDetail />} />
           <Route path="/posts" element={<Posts />} />
           <Route path="/posts/:slug" element={<PostDetail />} />
           <Route path="/about" element={<About />} />

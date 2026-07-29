@@ -549,6 +549,7 @@
             {
               "id": 1,
               "material_name": "Paper",
+              "material_slug": "paper",
               "weight_grams": 3.0,
               "impacts": {
                 "greenhouse_gas_kg": 0.004860000000000001,
@@ -1303,6 +1304,7 @@
             {
               "id": 2,
               "material_name": "Cotton",
+              "material_slug": "cotton",
               "weight_grams": 25.0,
               "impacts": {
                 "greenhouse_gas_kg": 0.08,
@@ -1317,5 +1319,5 @@
       ]
     }
   },
-  "export_timestamp": "2026-03-16T21:44:18.929696"
+  "export_timestamp": "2026-03-16T22:08:12.702900"
 }

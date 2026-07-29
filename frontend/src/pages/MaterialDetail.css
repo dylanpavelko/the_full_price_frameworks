@@ -1,0 +1,182 @@
+.material-detail {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: var(--spacing-xl) var(--spacing-md);
+}
+
+.material-detail__header {
+  margin-bottom: var(--spacing-xl);
+}
+
+.material-detail__header h1 {
+  margin: 0 0 var(--spacing-sm) 0;
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  letter-spacing: -0.02em;
+}
+
+.material-detail__category-badge {
+  display: inline-block;
+  padding: 4px 14px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-secondary);
+  text-decoration: none;
+  margin-bottom: var(--spacing-md);
+}
+
+.material-detail__category-badge:hover {
+  border-color: var(--color-secondary);
+}
+
+.material-detail__desc {
+  margin: var(--spacing-md) 0 0;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--color-text-muted);
+}
+
+.material-detail__error {
+  text-align: center;
+  padding: 4rem 1rem;
+  color: var(--color-text-muted);
+}
+
+/* Content sections */
+.material-detail__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+}
+
+.md-section {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-lg);
+}
+
+.md-section--muted {
+  background: #f8f9fa;
+}
+
+.md-section h2 {
+  margin: 0 0 var(--spacing-md) 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.md-section p {
+  margin: 0;
+  line-height: 1.65;
+  color: var(--color-text-main);
+  white-space: pre-line;  /* preserves newlines from backend */
+}
+
+.md-section__sub {
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  margin-bottom: var(--spacing-md) !important;
+}
+
+.md-unit-note {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--color-text-muted);
+}
+
+/* Impact table */
+.md-table-wrap {
+  overflow-x: auto;
+}
+
+.md-impact-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.md-impact-table th,
+.md-impact-table td {
+  padding: 10px 14px;
+  text-align: right;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.md-impact-table th {
+  text-align: right;
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+}
+
+.md-impact-table th:first-child,
+.md-impact-table td:first-child {
+  text-align: left;
+}
+
+.md-metric-label {
+  font-weight: 600;
+  color: var(--color-text-main);
+}
+
+.md-total {
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+/* Product chips */
+.md-product-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+
+.md-product-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  color: var(--color-primary);
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.md-product-chip:hover {
+  border-color: var(--color-secondary);
+  box-shadow: var(--shadow-sm);
+}
+
+.md-product-chip__weight {
+  font-weight: 400;
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+}
+
+/* Related materials grid */
+.md-related-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--spacing-md);
+}
+
+@media (max-width: 768px) {
+  .material-detail__header h1 {
+    font-size: 1.75rem;
+  }
+  .md-related-grid {
+    grid-template-columns: 1fr;
+  }
+}

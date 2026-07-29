@@ -22,6 +22,7 @@ export function Header() {
         <nav className="header__nav">
           <Link to="/" className="header__link">Home</Link>
           <Link to="/products" className="header__link">Explore Products</Link>
+          <Link to="/materials" className="header__link">Materials</Link>
           <Link to="/posts" className="header__link">Blog</Link>
           <Link to="/about" className="header__link">About</Link>
         </nav>

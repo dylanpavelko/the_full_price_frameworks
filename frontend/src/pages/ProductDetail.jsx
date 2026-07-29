@@ -119,7 +119,7 @@ export function ProductDetail() {
                 {components.map((component) => (
                   <div key={component.id} className="sidebar-component-item">
                     <div className="sc-header">
-                      <span className="sc-name">{component.material_name}</span>
+                      <Link to={`/materials/${component.material_slug}`} className="sc-name sc-name--link">{component.material_name}</Link>
                       <span className="sc-weight">{component.weight_grams}g</span>
                     </div>
                     <div className="sc-impacts">

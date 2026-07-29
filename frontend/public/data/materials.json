@@ -1,0 +1,272 @@
+{
+  "categories": [
+    {
+      "id": 1,
+      "name": "Commodity Plastics",
+      "slug": "commodity-plastics",
+      "description": "High-volume thermoplastics used in everyday consumer products.",
+      "typical_products": "bottles, packaging, food containers",
+      "material_slugs": []
+    },
+    {
+      "id": 2,
+      "name": "Engineering Plastics",
+      "slug": "engineering-plastics",
+      "description": "Higher-performance polymers for demanding mechanical or thermal applications.",
+      "typical_products": "appliance housings, mechanical parts, electronics components",
+      "material_slugs": []
+    },
+    {
+      "id": 3,
+      "name": "Elastomers / Rubbers",
+      "slug": "elastomers-rubbers",
+      "description": "Flexible polymers that return to their original shape after deformation.",
+      "typical_products": "seals, gaskets, grips, flexible lids",
+      "material_slugs": []
+    },
+    {
+      "id": 4,
+      "name": "Polymer Foams",
+      "slug": "polymer-foams",
+      "description": "Expanded plastics with cellular structure, valued for cushioning and insulation.",
+      "typical_products": "cushions, packaging, sponges, insulation",
+      "material_slugs": [
+        "polyurethane-foam"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Regenerated Bio-polymers",
+      "slug": "regenerated-bio-polymers",
+      "description": "Processed plant polymers — cellulose or starch chemically reformed into new materials.",
+      "typical_products": "cleaning products, textiles, wipes",
+      "material_slugs": []
+    },
+    {
+      "id": 6,
+      "name": "Natural Fibers",
+      "slug": "natural-fibers",
+      "description": "Plant or animal fibers used in their relatively natural form.",
+      "typical_products": "cloths, brushes, textiles",
+      "material_slugs": [
+        "cotton"
+      ]
+    },
+    {
+      "id": 7,
+      "name": "Metals",
+      "slug": "metals",
+      "description": "Metallic elements and alloys — usually easy to identify and measure.",
+      "typical_products": "cookware, tools, fasteners, electrical wiring",
+      "material_slugs": []
+    },
+    {
+      "id": 8,
+      "name": "Glass / Ceramics / Minerals",
+      "slug": "glass-ceramics-minerals",
+      "description": "Inorganic non-metal solids including glass, porcelain, and stone.",
+      "typical_products": "dishes, abrasives, tiles, cooktops",
+      "material_slugs": []
+    },
+    {
+      "id": 9,
+      "name": "Paper / Wood Materials",
+      "slug": "paper-wood-materials",
+      "description": "Cellulose-based materials that have not been regenerated into polymer form.",
+      "typical_products": "packaging, furniture, paper products",
+      "material_slugs": [
+        "paper"
+      ]
+    },
+    {
+      "id": 10,
+      "name": "Adhesives / Coatings / Additives",
+      "slug": "adhesives-coatings-additives",
+      "description": "Usually small mass but important — affects recyclability and toxicity.",
+      "typical_products": "epoxy, polyurethane adhesive, paint, resin binders, flame retardants",
+      "material_slugs": []
+    }
+  ],
+  "materials": [
+    {
+      "id": 1,
+      "name": "Cotton",
+      "slug": "cotton",
+      "description": "",
+      "category": {
+        "id": 6,
+        "name": "Natural Fibers",
+        "slug": "natural-fibers"
+      },
+      "sourcing_info": "",
+      "fabrication_info": "",
+      "end_of_life_info": "",
+      "environmental_notes": "",
+      "methodology": "assumptions about ow we calculated the impact of cotton",
+      "impact_factors": {
+        "production": {
+          "co2e_kg_per_kg": 3.0,
+          "water_liters_per_kg": 12000.0,
+          "energy_kwh_per_kg": 15.0,
+          "land_m2_per_kg": 2.5,
+          "cost_per_kg": 1.75,
+          "source": {
+            "url": "",
+            "name": "",
+            "note": ""
+          }
+        },
+        "transport": {
+          "co2e_kg_per_kg": 0.15,
+          "water_liters_per_kg": 5.0,
+          "energy_kwh_per_kg": 0.5,
+          "land_m2_per_kg": 0.0,
+          "cost_per_kg": 0.1,
+          "source": {
+            "url": "",
+            "name": "",
+            "note": ""
+          }
+        },
+        "end_of_life": {
+          "co2e_kg_per_kg": 0.05,
+          "water_liters_per_kg": 1.0,
+          "energy_kwh_per_kg": 0.05,
+          "land_m2_per_kg": 0.01,
+          "cost_per_kg": 0.02,
+          "source": {
+            "url": "http://www.google.com",
+            "name": "google",
+            "note": "cost associated with paying for landfill services"
+          }
+        }
+      },
+      "products_using": [
+        {
+          "id": 2,
+          "name": "Cotton Napkin",
+          "slug": "cotton-napkin",
+          "weight_grams": 25.0
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Paper",
+      "slug": "paper",
+      "description": "",
+      "category": {
+        "id": 9,
+        "name": "Paper / Wood Materials",
+        "slug": "paper-wood-materials"
+      },
+      "sourcing_info": "",
+      "fabrication_info": "",
+      "end_of_life_info": "",
+      "environmental_notes": "",
+      "methodology": "",
+      "impact_factors": {
+        "production": {
+          "co2e_kg_per_kg": 1.5,
+          "water_liters_per_kg": 3000.0,
+          "energy_kwh_per_kg": 8.0,
+          "land_m2_per_kg": 1.2,
+          "cost_per_kg": 0.8,
+          "source": {
+            "url": "",
+            "name": "",
+            "note": ""
+          }
+        },
+        "transport": {
+          "co2e_kg_per_kg": 0.1,
+          "water_liters_per_kg": 5.0,
+          "energy_kwh_per_kg": 0.2,
+          "land_m2_per_kg": 0.0,
+          "cost_per_kg": 0.05,
+          "source": {
+            "url": "",
+            "name": "",
+            "note": ""
+          }
+        },
+        "end_of_life": {
+          "co2e_kg_per_kg": 0.02,
+          "water_liters_per_kg": 10.0,
+          "energy_kwh_per_kg": 0.1,
+          "land_m2_per_kg": 0.0,
+          "cost_per_kg": 0.02,
+          "source": {
+            "url": "",
+            "name": "",
+            "note": ""
+          }
+        }
+      },
+      "products_using": [
+        {
+          "id": 1,
+          "name": "Paper Napkin",
+          "slug": "paper-napkin",
+          "weight_grams": 3.0
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Polyurethane foam",
+      "slug": "polyurethane-foam",
+      "description": "",
+      "category": {
+        "id": 4,
+        "name": "Polymer Foams",
+        "slug": "polymer-foams"
+      },
+      "sourcing_info": "",
+      "fabrication_info": "",
+      "end_of_life_info": "",
+      "environmental_notes": "",
+      "methodology": "",
+      "impact_factors": {
+        "production": {
+          "co2e_kg_per_kg": 0.0,
+          "water_liters_per_kg": 0.0,
+          "energy_kwh_per_kg": 0.0,
+          "land_m2_per_kg": 0.0,
+          "cost_per_kg": 0.0,
+          "source": {
+            "url": "",
+            "name": "",
+            "note": ""
+          }
+        },
+        "transport": {
+          "co2e_kg_per_kg": 0.0,
+          "water_liters_per_kg": 0.0,
+          "energy_kwh_per_kg": 0.0,
+          "land_m2_per_kg": 0.0,
+          "cost_per_kg": 0.0,
+          "source": {
+            "url": "",
+            "name": "",
+            "note": ""
+          }
+        },
+        "end_of_life": {
+          "co2e_kg_per_kg": 0.0,
+          "water_liters_per_kg": 0.0,
+          "energy_kwh_per_kg": 0.0,
+          "land_m2_per_kg": 0.0,
+          "cost_per_kg": 0.0,
+          "source": {
+            "url": "",
+            "name": "",
+            "note": ""
+          }
+        }
+      },
+      "products_using": []
+    }
+  ],
+  "export_timestamp": "2026-03-16T22:08:12.657217"
+}

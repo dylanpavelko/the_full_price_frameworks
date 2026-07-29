@@ -70,3 +70,34 @@ export async function loadProductBySlug(slug) {
   const products = await loadProducts();
   return products.find(p => p.slug === slug) || null;
 }
+
+/**
+ * Load all materials and categories from the static data export
+ * @returns {Promise<Object>} Object with materials array and categories array
+ */
+export async function loadMaterials() {
+  try {
+    const response = await fetch(`${import.meta.env.BASE_URL}data/materials.json`);
+    if (!response.ok) {
+      throw new Error('Failed to load materials');
+    }
+    const data = await response.json();
+    return {
+      materials: data.materials || [],
+      categories: data.categories || [],
+    };
+  } catch (error) {
+    console.error('Error loading materials:', error);
+    return { materials: [], categories: [] };
+  }
+}
+
+/**
+ * Load a single material by slug
+ * @param {string} slug - The material slug
+ * @returns {Promise<Object|null>} Material object or null if not found
+ */
+export async function loadMaterialBySlug(slug) {
+  const { materials } = await loadMaterials();
+  return materials.find(m => m.slug === slug) || null;
+}

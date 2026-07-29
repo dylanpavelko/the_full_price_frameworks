@@ -10,6 +10,41 @@ from django.db import models
 from django.utils.text import slugify
 
 
+class MaterialCategory(models.Model):
+    """
+    A broad grouping of materials (e.g. "Commodity plastics", "Natural fibers").
+
+    The default 10-bucket taxonomy covers the major material families found in
+    consumer products.  Categories give users a way to browse related materials
+    and understand where a material fits in the broader landscape.
+    """
+    name = models.CharField(max_length=150, unique=True)
+    slug = models.SlugField(max_length=160, unique=True)
+    description = models.TextField(
+        blank=True,
+        help_text='Short description of this material family.',
+    )
+    typical_products = models.TextField(
+        blank=True,
+        help_text='Comma-separated list of typical product types (e.g. "bottles, packaging, food containers").',
+    )
+    sort_order = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['sort_order', 'name']
+        verbose_name_plural = 'Material categories'
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+
 class Material(models.Model):
     """
     Represents a material that products can be made from (e.g., cotton, plastic).
@@ -24,7 +59,34 @@ class Material(models.Model):
     practices (e.g., GHG Protocol, ISO 14040, Life Cycle Assessment ISO 14040/44).
     """
     name = models.CharField(max_length=100, unique=True)
+    slug = models.SlugField(max_length=120, unique=True, blank=True)
+    category = models.ForeignKey(
+        MaterialCategory,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='materials',
+        help_text='Broad material family (e.g. "Commodity plastics").',
+    )
     description = models.TextField(blank=True)
+
+    # Rich content fields for the material detail page
+    sourcing_info = models.TextField(
+        blank=True,
+        help_text='How this material is sourced / extracted (e.g. mined, harvested, synthesized).',
+    )
+    fabrication_info = models.TextField(
+        blank=True,
+        help_text='How the raw material is processed into usable form.',
+    )
+    end_of_life_info = models.TextField(
+        blank=True,
+        help_text='Recycling, composting, landfill characteristics.',
+    )
+    environmental_notes = models.TextField(
+        blank=True,
+        help_text='Additional sustainability / toxicity / ecological notes.',
+    )
     
     # PRODUCTION PHASE - per kilogram of material
     production_co2e_kg_per_kg = models.FloatField(
@@ -86,8 +148,79 @@ class Material(models.Model):
         ordering = ['name']
         verbose_name_plural = "Materials"
 
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return self.name
+
+    def to_dict(self):
+        """Serialize material for the static JSON export."""
+        return {
+            'id': self.id,
+            'name': self.name,
+            'slug': self.slug,
+            'description': self.description,
+            'category': {
+                'id': self.category.id,
+                'name': self.category.name,
+                'slug': self.category.slug,
+            } if self.category else None,
+            'sourcing_info': self.sourcing_info,
+            'fabrication_info': self.fabrication_info,
+            'end_of_life_info': self.end_of_life_info,
+            'environmental_notes': self.environmental_notes,
+            'methodology': self.methodology,
+            'impact_factors': {
+                'production': {
+                    'co2e_kg_per_kg': self.production_co2e_kg_per_kg,
+                    'water_liters_per_kg': self.production_water_liters_per_kg,
+                    'energy_kwh_per_kg': self.production_energy_kwh_per_kg,
+                    'land_m2_per_kg': self.production_land_m2_per_kg,
+                    'cost_per_kg': self.production_cost_per_kg,
+                    'source': {
+                        'url': self.production_source_url,
+                        'name': self.production_source_name,
+                        'note': self.production_source_note,
+                    },
+                },
+                'transport': {
+                    'co2e_kg_per_kg': self.transport_co2e_kg_per_kg,
+                    'water_liters_per_kg': self.transport_water_liters_per_kg,
+                    'energy_kwh_per_kg': self.transport_energy_kwh_per_kg,
+                    'land_m2_per_kg': self.transport_land_m2_per_kg,
+                    'cost_per_kg': self.transport_cost_per_kg,
+                    'source': {
+                        'url': self.transport_source_url,
+                        'name': self.transport_source_name,
+                        'note': self.transport_source_note,
+                    },
+                },
+                'end_of_life': {
+                    'co2e_kg_per_kg': self.end_of_life_co2e_kg_per_kg,
+                    'water_liters_per_kg': self.end_of_life_water_liters_per_kg,
+                    'energy_kwh_per_kg': self.end_of_life_energy_kwh_per_kg,
+                    'land_m2_per_kg': self.end_of_life_land_m2_per_kg,
+                    'cost_per_kg': self.end_of_life_cost_per_kg,
+                    'source': {
+                        'url': self.end_of_life_source_url,
+                        'name': self.end_of_life_source_name,
+                        'note': self.end_of_life_source_note,
+                    },
+                },
+            },
+            'products_using': [
+                {
+                    'id': comp.product.id,
+                    'name': comp.product.name,
+                    'slug': comp.product.slug,
+                    'weight_grams': comp.weight_grams,
+                }
+                for comp in self.productcomponent_set.select_related('product').all()
+            ],
+        }
 
 
 class Product(models.Model):
@@ -715,6 +848,7 @@ class ProductComponent(models.Model):
         return {
             'id': self.id,
             'material_name': self.material.name,
+            'material_slug': self.material.slug,
             'weight_grams': self.weight_grams,
             'impacts': {
                 'greenhouse_gas_kg': self.get_greenhouse_gas_impact(),
