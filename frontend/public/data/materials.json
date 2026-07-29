@@ -40,7 +40,9 @@
       "slug": "regenerated-bio-polymers",
       "description": "Processed plant polymers — cellulose or starch chemically reformed into new materials.",
       "typical_products": "cleaning products, textiles, wipes",
-      "material_slugs": []
+      "material_slugs": [
+        "cellulose"
+      ]
     },
     {
       "id": 6,
@@ -88,6 +90,61 @@
     }
   ],
   "materials": [
+    {
+      "id": 4,
+      "name": "Cellulose",
+      "slug": "cellulose",
+      "description": "",
+      "category": {
+        "id": 5,
+        "name": "Regenerated Bio-polymers",
+        "slug": "regenerated-bio-polymers"
+      },
+      "sourcing_info": "",
+      "fabrication_info": "",
+      "end_of_life_info": "",
+      "environmental_notes": "",
+      "methodology": "",
+      "impact_factors": {
+        "production": {
+          "co2e_kg_per_kg": 0.0,
+          "water_liters_per_kg": 0.0,
+          "energy_kwh_per_kg": 0.0,
+          "land_m2_per_kg": 0.0,
+          "cost_per_kg": 0.0,
+          "source": {
+            "url": "",
+            "name": "",
+            "note": ""
+          }
+        },
+        "transport": {
+          "co2e_kg_per_kg": 0.0,
+          "water_liters_per_kg": 0.0,
+          "energy_kwh_per_kg": 0.0,
+          "land_m2_per_kg": 0.0,
+          "cost_per_kg": 0.0,
+          "source": {
+            "url": "",
+            "name": "",
+            "note": ""
+          }
+        },
+        "end_of_life": {
+          "co2e_kg_per_kg": 0.0,
+          "water_liters_per_kg": 0.0,
+          "energy_kwh_per_kg": 0.0,
+          "land_m2_per_kg": 0.0,
+          "cost_per_kg": 0.0,
+          "source": {
+            "url": "",
+            "name": "",
+            "note": ""
+          }
+        }
+      },
+      "products_using": []
+    },
     {
       "id": 1,
       "name": "Cotton",
@@ -213,6 +270,57 @@
       ]
     },
     {
+      "id": 5,
+      "name": "Polyester",
+      "slug": "polyester",
+      "description": "",
+      "category": null,
+      "sourcing_info": "",
+      "fabrication_info": "",
+      "end_of_life_info": "",
+      "environmental_notes": "",
+      "methodology": "",
+      "impact_factors": {
+        "production": {
+          "co2e_kg_per_kg": 0.0,
+          "water_liters_per_kg": 0.0,
+          "energy_kwh_per_kg": 0.0,
+          "land_m2_per_kg": 0.0,
+          "cost_per_kg": 0.0,
+          "source": {
+            "url": "",
+            "name": "",
+            "note": ""
+          }
+        },
+        "transport": {
+          "co2e_kg_per_kg": 0.0,
+          "water_liters_per_kg": 0.0,
+          "energy_kwh_per_kg": 0.0,
+          "land_m2_per_kg": 0.0,
+          "cost_per_kg": 0.0,
+          "source": {
+            "url": "",
+            "name": "",
+            "note": ""
+          }
+        },
+        "end_of_life": {
+          "co2e_kg_per_kg": 0.0,
+          "water_liters_per_kg": 0.0,
+          "energy_kwh_per_kg": 0.0,
+          "land_m2_per_kg": 0.0,
+          "cost_per_kg": 0.0,
+          "source": {
+            "url": "",
+            "name": "",
+            "note": ""
+          }
+        }
+      },
+      "products_using": []
+    },
+    {
       "id": 3,
       "name": "Polyurethane foam",
       "slug": "polyurethane-foam",
@@ -268,5 +376,5 @@
       "products_using": []
     }
   ],
-  "export_timestamp": "2026-03-16T22:08:12.657217"
+  "export_timestamp": "2026-07-29T21:59:40.146793"
 }
