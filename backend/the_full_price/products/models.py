@@ -10,6 +10,14 @@ from django.db import models
 from django.utils.text import slugify
 
 
+DATA_STATUS_CHOICES = [
+    ('draft', 'Draft'),
+    ('needs_review', 'Needs Review'),
+    ('approved', 'Approved'),
+    ('published', 'Published'),
+]
+
+
 class MaterialCategory(models.Model):
     """
     A broad grouping of materials (e.g. "Commodity plastics", "Natural fibers").
@@ -60,6 +68,15 @@ class Material(models.Model):
     """
     name = models.CharField(max_length=100, unique=True)
     slug = models.SlugField(max_length=120, unique=True, blank=True)
+    data_status = models.CharField(
+        max_length=20,
+        choices=DATA_STATUS_CHOICES,
+        default='draft',
+        db_index=True,
+        help_text='Workflow status for sourcing and review.',
+    )
+    verified_at = models.DateTimeField(null=True, blank=True)
+    verification_notes = models.TextField(blank=True)
     category = models.ForeignKey(
         MaterialCategory,
         on_delete=models.SET_NULL,
@@ -156,6 +173,41 @@ class Material(models.Model):
     def __str__(self):
         return self.name
 
+    def _phase_source_present(self, phase):
+        return any(
+            getattr(self, f'{phase}_source_{suffix}', '')
+            for suffix in ['url', 'name', 'note']
+        )
+
+    def get_phase_completeness(self):
+        phases = {}
+        for phase in ['production', 'transport', 'end_of_life']:
+            source_present = self._phase_source_present(phase)
+            phases[phase] = {
+                'complete': source_present,
+                'percent': 100 if source_present else 0,
+                'source_present': source_present,
+            }
+        return phases
+
+    def get_missing_items(self):
+        missing = []
+        for phase, summary in self.get_phase_completeness().items():
+            if not summary['complete']:
+                missing.append(f'{phase} source')
+        return missing
+
+    def get_completeness_summary(self):
+        phase_completeness = self.get_phase_completeness()
+        overall_percent = sum(item['percent'] for item in phase_completeness.values()) / len(phase_completeness)
+        return {
+            'status': self.data_status,
+            'verified_at': self.verified_at.isoformat() if self.verified_at else None,
+            'overall_percent': overall_percent,
+            'phase_percentages': {phase: item['percent'] for phase, item in phase_completeness.items()},
+            'missing_items': self.get_missing_items(),
+        }
+
     def to_dict(self):
         """Serialize material for the static JSON export."""
         return {
@@ -173,6 +225,7 @@ class Material(models.Model):
             'end_of_life_info': self.end_of_life_info,
             'environmental_notes': self.environmental_notes,
             'methodology': self.methodology,
+            'completeness': self.get_completeness_summary(),
             'impact_factors': {
                 'production': {
                     'co2e_kg_per_kg': self.production_co2e_kg_per_kg,
@@ -234,6 +287,15 @@ class Product(models.Model):
     name = models.CharField(max_length=255, unique=True)
     description = models.TextField(blank=True)
     slug = models.SlugField(unique=True)
+    data_status = models.CharField(
+        max_length=20,
+        choices=DATA_STATUS_CHOICES,
+        default='draft',
+        db_index=True,
+        help_text='Workflow status for sourcing and review.',
+    )
+    verified_at = models.DateTimeField(null=True, blank=True)
+    verification_notes = models.TextField(blank=True)
     
     # Lifecycle parameters
     purchase_price_usd = models.FloatField(default=0, help_text="Price at purchase")
@@ -272,6 +334,66 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+    def _use_source_present(self):
+        return any(
+            getattr(self, f'use_phase_source_{suffix}', '')
+            for suffix in ['url', 'name', 'note']
+        )
+
+    def get_use_phase_completeness(self):
+        source_present = self._use_source_present()
+        return {
+            'complete': source_present,
+            'percent': 100 if source_present else 0,
+            'source_present': source_present,
+        }
+
+    def get_component_completeness(self):
+        components = list(self.components.select_related('material').all())
+        if not components:
+            return {
+                'complete': False,
+                'percent': 0,
+                'missing_items': ['components'],
+            }
+
+        missing_items = []
+        for component in components:
+            if component.weight_grams <= 0:
+                missing_items.append(f'{component.material.name} weight')
+            if component.material.data_status == 'draft':
+                missing_items.append(f'{component.material.name} status')
+
+        complete = not missing_items
+        return {
+            'complete': complete,
+            'percent': 100 if complete else 0,
+            'missing_items': missing_items,
+        }
+
+    def get_missing_items(self):
+        missing = []
+        if not self._use_source_present():
+            missing.append('use phase source')
+        missing.extend(self.get_component_completeness()['missing_items'])
+        return missing
+
+    def get_completeness_summary(self):
+        use_phase = self.get_use_phase_completeness()
+        component_readiness = self.get_component_completeness()
+        overall_percent = (use_phase['percent'] + component_readiness['percent']) / 2
+
+        return {
+            'status': self.data_status,
+            'verified_at': self.verified_at.isoformat() if self.verified_at else None,
+            'overall_percent': overall_percent,
+            'phase_percentages': {
+                'use': use_phase['percent'],
+                'components': component_readiness['percent'],
+            },
+            'missing_items': self.get_missing_items(),
+        }
 
     def get_total_impact(self):
         """
@@ -441,6 +563,7 @@ class Product(models.Model):
             'purchase_price_usd': self.purchase_price_usd,
             'uses_per_year': self.uses_per_year,
             'average_lifespan_uses': self.average_lifespan_uses,
+            'completeness': self.get_completeness_summary(),
             'impacts': impact,
             'impacts_by_phase': impact_by_phase,
             'assumptions': self.get_assumptions(),

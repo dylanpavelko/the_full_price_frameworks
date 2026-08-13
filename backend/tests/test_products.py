@@ -19,22 +19,32 @@ class MaterialModelTests(TestCase):
         """Create test fixtures."""
         self.cotton = Material.objects.create(
             name='Cotton',
-            greenhouse_gas_kg_per_kg=3.5,
-            water_liters_per_kg=10000,
-            energy_kwh_per_kg=0.5,
-            land_m2_per_kg=0.5,
-            cost_per_kg=5.0
+            production_co2e_kg_per_kg=3.5,
+            production_water_liters_per_kg=10000,
+            production_energy_kwh_per_kg=0.5,
+            production_land_m2_per_kg=0.5,
+            production_cost_per_kg=5.0,
+            production_source_name='Test source',
+            transport_source_name='Test source',
+            end_of_life_source_name='Test source',
         )
 
     def test_material_creation(self):
         """Test that a material can be created with all fields."""
         self.assertEqual(self.cotton.name, 'Cotton')
-        self.assertEqual(self.cotton.greenhouse_gas_kg_per_kg, 3.5)
-        self.assertEqual(self.cotton.water_liters_per_kg, 10000)
+        self.assertEqual(self.cotton.production_co2e_kg_per_kg, 3.5)
+        self.assertEqual(self.cotton.production_water_liters_per_kg, 10000)
 
     def test_material_str(self):
         """Test material string representation."""
         self.assertEqual(str(self.cotton), 'Cotton')
+
+    def test_material_completeness_summary(self):
+        summary = self.cotton.get_completeness_summary()
+
+        self.assertEqual(summary['status'], 'draft')
+        self.assertEqual(summary['overall_percent'], 100.0)
+        self.assertEqual(summary['missing_items'], [])
 
     def test_material_uniqueness(self):
         """Test that material names are unique."""
@@ -49,11 +59,15 @@ class ProductComponentTests(TestCase):
         """Create test fixtures."""
         self.cotton = Material.objects.create(
             name='Cotton',
-            greenhouse_gas_kg_per_kg=2.0,
-            water_liters_per_kg=10000,
-            energy_kwh_per_kg=1.0,
-            land_m2_per_kg=1.0,
-            cost_per_kg=10.0
+            data_status='approved',
+            production_co2e_kg_per_kg=2.0,
+            production_water_liters_per_kg=10000,
+            production_energy_kwh_per_kg=1.0,
+            production_land_m2_per_kg=1.0,
+            production_cost_per_kg=10.0,
+            production_source_name='Test source',
+            transport_source_name='Test source',
+            end_of_life_source_name='Test source',
         )
         
         self.product = Product.objects.create(
@@ -123,20 +137,28 @@ class ProductTests(TestCase):
         """Create test fixtures."""
         self.cotton = Material.objects.create(
             name='Cotton',
-            greenhouse_gas_kg_per_kg=2.0,
-            water_liters_per_kg=10000,
-            energy_kwh_per_kg=1.0,
-            land_m2_per_kg=1.0,
-            cost_per_kg=10.0
+            data_status='approved',
+            production_co2e_kg_per_kg=2.0,
+            production_water_liters_per_kg=10000,
+            production_energy_kwh_per_kg=1.0,
+            production_land_m2_per_kg=1.0,
+            production_cost_per_kg=10.0,
+            production_source_name='Test source',
+            transport_source_name='Test source',
+            end_of_life_source_name='Test source',
         )
         
         self.plastic = Material.objects.create(
             name='Plastic',
-            greenhouse_gas_kg_per_kg=3.0,
-            water_liters_per_kg=100,
-            energy_kwh_per_kg=2.0,
-            land_m2_per_kg=0.1,
-            cost_per_kg=2.0
+            data_status='approved',
+            production_co2e_kg_per_kg=3.0,
+            production_water_liters_per_kg=100,
+            production_energy_kwh_per_kg=2.0,
+            production_land_m2_per_kg=0.1,
+            production_cost_per_kg=2.0,
+            production_source_name='Test source',
+            transport_source_name='Test source',
+            end_of_life_source_name='Test source',
         )
         
         self.product = Product.objects.create(
@@ -170,32 +192,25 @@ class ProductTests(TestCase):
         """Test total greenhouse gas calculation across all components."""
         impact = self.product.get_total_impact()
         
-        # Cotton: 0.4 kg * 2.0 = 0.8
-        # Plastic: 0.1 kg * 3.0 = 0.3
-        # Total: 1.1
-        expected = 1.1
-        self.assertEqual(impact['greenhouse_gas_kg'], expected)
+        # Upfront total: 1.1, annualized over 300 uses and 75 uses/year = 0.275
+        expected = 0.275
+        self.assertEqual(impact['greenhouse_gas_kg']['value'], expected)
 
     def test_product_total_water(self):
         """Test total water impact across all components."""
         impact = self.product.get_total_impact()
         
-        # Cotton: 0.4 kg * 10000 = 4000
-        # Plastic: 0.1 kg * 100 = 10
-        # Total: 4010
-        expected = 4010.0
-        self.assertEqual(impact['water_liters'], expected)
+        # Upfront total: 4010, annualized over 300 uses and 75 uses/year = 1002.5
+        expected = 1002.5
+        self.assertEqual(impact['water_liters']['value'], expected)
 
     def test_product_total_cost(self):
         """Test total cost including material costs and purchase price."""
         impact = self.product.get_total_impact()
         
-        # Cotton: 0.4 kg * $10 = $4
-        # Plastic: 0.1 kg * $2 = $0.20
-        # Purchase price: $50
-        # Total: $54.20
-        expected = 54.20
-        self.assertEqual(impact['cost_usd'], expected)
+        # Upfront material cost total: $4.20, annualized over 300 uses and 75 uses/year = $1.05
+        expected = 1.05
+        self.assertEqual(impact['cost_usd']['value'], expected)
 
     def test_product_to_dict(self):
         """Test conversion to dictionary for JSON serialization."""
@@ -212,6 +227,14 @@ class ProductTests(TestCase):
         self.assertIn('energy_kwh', data['impacts'])
         self.assertIn('land_m2', data['impacts'])
         self.assertIn('cost_usd', data['impacts'])
+        self.assertIn('completeness', data)
+
+    def test_product_completeness_summary(self):
+        summary = self.product.get_completeness_summary()
+
+        self.assertEqual(summary['status'], 'draft')
+        self.assertEqual(summary['phase_percentages']['components'], 100)
+        self.assertEqual(summary['missing_items'], ['use phase source'])
 
 
 class ProductAPITests(TestCase):
@@ -221,11 +244,14 @@ class ProductAPITests(TestCase):
         """Create test fixtures."""
         self.material = Material.objects.create(
             name='Test Material',
-            greenhouse_gas_kg_per_kg=1.0,
-            water_liters_per_kg=100,
-            energy_kwh_per_kg=0.5,
-            land_m2_per_kg=0.1,
-            cost_per_kg=5.0
+            production_co2e_kg_per_kg=1.0,
+            production_water_liters_per_kg=100,
+            production_energy_kwh_per_kg=0.5,
+            production_land_m2_per_kg=0.1,
+            production_cost_per_kg=5.0,
+            production_source_name='Test source',
+            transport_source_name='Test source',
+            end_of_life_source_name='Test source',
         )
         
         self.product = Product.objects.create(

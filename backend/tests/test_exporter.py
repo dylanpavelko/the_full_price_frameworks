@@ -25,23 +25,40 @@ class StaticDataExporterTests(TestCase):
         # Create materials
         self.cotton = Material.objects.create(
             name='Cotton',
-            greenhouse_gas_kg_per_kg=2.0,
-            water_liters_per_kg=10000,
-            energy_kwh_per_kg=1.0,
-            land_m2_per_kg=1.0,
-            cost_per_kg=5.0
+            data_status='published',
+            production_co2e_kg_per_kg=2.0,
+            production_water_liters_per_kg=10000,
+            production_energy_kwh_per_kg=1.0,
+            production_land_m2_per_kg=1.0,
+            production_cost_per_kg=5.0,
+            production_source_name='Test source',
+            transport_source_name='Test source',
+            end_of_life_source_name='Test source',
         )
         
         # Create product
         self.product = Product.objects.create(
             name='Test T-Shirt',
             slug='test-tshirt',
-            purchase_price_usd=20.0
+            purchase_price_usd=20.0,
+            data_status='published',
         )
         ProductComponent.objects.create(
             product=self.product,
             material=self.cotton,
             weight_grams=200
+        )
+
+        self.draft_product = Product.objects.create(
+            name='Draft T-Shirt',
+            slug='draft-tshirt',
+            purchase_price_usd=15.0,
+            data_status='draft',
+        )
+        ProductComponent.objects.create(
+            product=self.draft_product,
+            material=self.cotton,
+            weight_grams=100,
         )
         
         # Create post
@@ -75,9 +92,10 @@ class StaticDataExporterTests(TestCase):
                     data = json.load(f)
                 
                 self.assertIn('products', data)
-                self.assertEqual(len(data['products']), 1)
-                self.assertEqual(data['products'][0]['name'], 'Test T-Shirt')
+                self.assertEqual(len(data['products']), 2)
+                self.assertEqual({product['name'] for product in data['products']}, {'Test T-Shirt', 'Draft T-Shirt'})
                 self.assertIn('export_timestamp', data)
+                self.assertEqual(data['export_mode'], 'all')
 
     @override_settings(STATIC_DATA_OUTPUT_DIR='/tmp/test_export')
     def test_export_posts_file(self):
@@ -119,6 +137,22 @@ class StaticDataExporterTests(TestCase):
                 self.assertEqual(data['post']['title'], 'Test Blog Post')
 
     @override_settings(STATIC_DATA_OUTPUT_DIR='/tmp/test_export')
+    def test_export_products_published_only(self):
+        """Test that published-only export filters out draft products."""
+        with TemporaryDirectory() as tmpdir:
+            with override_settings(STATIC_DATA_OUTPUT_DIR=tmpdir):
+                exporter = StaticDataExporter()
+                exporter.export_products(require_published=True)
+
+                products_file = Path(tmpdir) / 'products.json'
+                with open(products_file, 'r') as f:
+                    data = json.load(f)
+
+                self.assertEqual(data['export_mode'], 'published_only')
+                self.assertEqual(len(data['products']), 1)
+                self.assertEqual(data['products'][0]['slug'], 'test-tshirt')
+
+    @override_settings(STATIC_DATA_OUTPUT_DIR='/tmp/test_export')
     def test_export_all(self):
         """Test the complete export process."""
         with TemporaryDirectory() as tmpdir:
@@ -156,3 +190,4 @@ class StaticDataExporterTests(TestCase):
                 self.assertIn('energy_kwh', impacts)
                 self.assertIn('land_m2', impacts)
                 self.assertIn('cost_usd', impacts)
+                self.assertIn('completeness', product)

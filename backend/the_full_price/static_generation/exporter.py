@@ -29,7 +29,7 @@ class StaticDataExporter:
         self.output_dir = Path(settings.STATIC_DATA_OUTPUT_DIR)
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
-    def export_all(self):
+    def export_all(self, require_published=False):
         """
         Export all data to static JSON files.
         
@@ -41,21 +41,26 @@ class StaticDataExporter:
         """
         print("Starting static data export...")
         
-        self.export_products()
+        self.export_products(require_published=require_published)
         self.export_materials()
         self.export_posts()
         self.export_individual_posts()
         
         print("✓ Static data export completed successfully!")
 
-    def export_products(self):
+    def export_products(self, require_published=False):
         """
         Export all products to a single JSON file with complete impact data.
         """
         products = Product.objects.all()
+
+        if require_published:
+            products = products.filter(data_status='published')
+
         data = {
             'products': [product.to_dict() for product in products],
             'export_timestamp': self._get_timestamp(),
+            'export_mode': 'published_only' if require_published else 'all',
         }
         
         output_file = self.output_dir / 'products.json'

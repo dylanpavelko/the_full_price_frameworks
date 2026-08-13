@@ -4,7 +4,12 @@ Django admin configuration for products app.
 Registers Product, Material, ProductComponent, and assumption models
 so they can be managed through the admin interface.
 """
+from datetime import timedelta
+
 from django.contrib import admin
+from django.shortcuts import render
+from django.urls import reverse
+from django.utils import timezone
 
 from .models import (
     Assumption,
@@ -111,14 +116,29 @@ class MaterialAdmin(admin.ModelAdmin):
     """
     Admin interface for Material model with lifecycle phase breakdown.
     """
-    list_display = ['name', 'slug', 'category', 'production_co2e_kg_per_kg', 'transport_co2e_kg_per_kg', 'end_of_life_co2e_kg_per_kg']
+    list_display = [
+        'name',
+        'slug',
+        'category',
+        'data_status_display',
+        'completeness_display',
+        'stale_days_display',
+        'production_co2e_kg_per_kg',
+        'transport_co2e_kg_per_kg',
+        'end_of_life_co2e_kg_per_kg',
+    ]
     search_fields = ['name', 'slug']
-    list_filter = ['category', 'created_at']
+    list_filter = ['data_status', 'category', 'created_at', 'verified_at']
     prepopulated_fields = {'slug': ('name',)}
     inlines = [MaterialUserFacingAssumptionInline, MaterialInternalAssumptionInline]
+    actions = ['mark_needs_review', 'mark_approved', 'mark_published']
     fieldsets = (
         ('Basic Information', {
             'fields': ('name', 'slug', 'category', 'description')
+        }),
+        ('Data Quality Workflow', {
+            'fields': ('data_status', 'verified_at', 'verification_notes'),
+            'description': 'Track whether the material has been collected, reviewed, or published.',
         }),
         ('Material Content (for public detail page)', {
             'classes': ('collapse',),
@@ -168,6 +188,33 @@ class MaterialAdmin(admin.ModelAdmin):
         }),
     )
 
+    @admin.display(description='Status')
+    def data_status_display(self, obj):
+        return obj.get_data_status_display()
+
+    @admin.display(description='Completeness %', ordering='data_status')
+    def completeness_display(self, obj):
+        return f"{obj.get_completeness_summary()['overall_percent']:.0f}%"
+
+    @admin.display(description='Stale (days)')
+    def stale_days_display(self, obj):
+        if not obj.verified_at:
+            return 'Never'
+        delta = timezone.now() - obj.verified_at
+        return delta.days
+
+    @admin.action(description='Mark selected materials as needs review')
+    def mark_needs_review(self, request, queryset):
+        queryset.update(data_status='needs_review')
+
+    @admin.action(description='Mark selected materials as approved')
+    def mark_approved(self, request, queryset):
+        queryset.update(data_status='approved', verified_at=timezone.now())
+
+    @admin.action(description='Mark selected materials as published')
+    def mark_published(self, request, queryset):
+        queryset.update(data_status='published', verified_at=timezone.now())
+
 
 class ProductComponentInline(admin.TabularInline):
     """
@@ -175,7 +222,14 @@ class ProductComponentInline(admin.TabularInline):
     """
     model = ProductComponent
     extra = 1
-    fields = ['material', 'weight_grams']
+    fields = ['material', 'material_status_display', 'weight_grams']
+    readonly_fields = ['material_status_display']
+
+    @admin.display(description='Material Status')
+    def material_status_display(self, obj):
+        if not obj or not obj.material_id:
+            return '-'
+        return obj.material.get_data_status_display()
 
 
 @admin.register(Product)
@@ -183,14 +237,27 @@ class ProductAdmin(admin.ModelAdmin):
     """
     Admin interface for Product model.
     """
-    list_display = ['name', 'slug', 'purchase_price_usd', 'uses_per_year', 'average_lifespan_uses']
-    list_filter = ['created_at']
+    list_display = [
+        'name',
+        'slug',
+        'data_status_display',
+        'completeness_display',
+        'purchase_price_usd',
+        'uses_per_year',
+        'average_lifespan_uses',
+    ]
+    list_filter = ['data_status', 'created_at', 'verified_at']
     search_fields = ['name', 'slug']
     prepopulated_fields = {'slug': ('name',)}
     inlines = [ProductComponentInline, ProductUserFacingAssumptionInline, ProductInternalAssumptionInline]
+    actions = ['mark_needs_review', 'mark_approved', 'mark_published']
     fieldsets = (
         ('Basic Information', {
             'fields': ('name', 'slug', 'description')
+        }),
+        ('Data Quality Workflow', {
+            'fields': ('data_status', 'verified_at', 'verification_notes'),
+            'description': 'Track whether the product has enough sourced data for review and publishing.',
         }),
         ('Pricing', {
             'fields': ('purchase_price_usd',)
@@ -213,6 +280,26 @@ class ProductAdmin(admin.ModelAdmin):
             ),
         }),
     )
+
+    @admin.display(description='Status')
+    def data_status_display(self, obj):
+        return obj.get_data_status_display()
+
+    @admin.display(description='Completeness %')
+    def completeness_display(self, obj):
+        return f"{obj.get_completeness_summary()['overall_percent']:.0f}%"
+
+    @admin.action(description='Mark selected products as needs review')
+    def mark_needs_review(self, request, queryset):
+        queryset.update(data_status='needs_review')
+
+    @admin.action(description='Mark selected products as approved')
+    def mark_approved(self, request, queryset):
+        queryset.update(data_status='approved', verified_at=timezone.now())
+
+    @admin.action(description='Mark selected products as published')
+    def mark_published(self, request, queryset):
+        queryset.update(data_status='published', verified_at=timezone.now())
 
 
 @admin.register(Assumption)
@@ -274,3 +361,53 @@ class ProductComponentAdmin(admin.ModelAdmin):
             'fields': ('product', 'material', 'weight_grams')
         }),
     )
+
+
+def _build_quality_row(obj, change_url_name, kind):
+    summary = obj.get_completeness_summary()
+    blocking_items = list(summary['missing_items'])
+
+    if not obj.verified_at:
+        blocking_items.append('Not verified yet')
+
+    if obj.data_status in {'draft', 'needs_review'}:
+        blocking_items.append(f"Status is {obj.get_data_status_display()}")
+
+    fully_sourced = not blocking_items and summary['overall_percent'] == 100
+
+    return {
+        'kind': kind,
+        'object': obj,
+        'status_label': obj.get_data_status_display(),
+        'overall_percent': summary['overall_percent'],
+        'verified_at': summary['verified_at'],
+        'blocking_items': blocking_items,
+        'fully_sourced': fully_sourced,
+        'edit_url': reverse(change_url_name, args=[obj.pk]),
+    }
+
+
+def data_quality_dashboard(request):
+    materials = Material.objects.select_related('category').order_by('name')
+    products = Product.objects.order_by('name')
+
+    material_rows = [_build_quality_row(material, 'admin:products_material_change', 'material') for material in materials]
+    product_rows = [_build_quality_row(product, 'admin:products_product_change', 'product') for product in products]
+
+    material_rows.sort(key=lambda row: (row['fully_sourced'], row['object'].name.lower()))
+    product_rows.sort(key=lambda row: (row['fully_sourced'], row['object'].name.lower()))
+
+    material_missing = sum(1 for row in material_rows if not row['fully_sourced'])
+    product_missing = sum(1 for row in product_rows if not row['fully_sourced'])
+
+    context = {
+        **admin.site.each_context(request),
+        'title': 'Data quality dashboard',
+        'material_rows': material_rows,
+        'product_rows': product_rows,
+        'material_count': len(material_rows),
+        'product_count': len(product_rows),
+        'material_missing': material_missing,
+        'product_missing': product_missing,
+    }
+    return render(request, 'admin/products/data_quality_dashboard.html', context)
